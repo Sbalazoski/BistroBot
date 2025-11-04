@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, MessageSquareText, Settings } from "lucide-react";
+import { LayoutDashboard, MessageSquareText, Settings, PlugZap } from "lucide-react"; // Import PlugZap icon
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -21,6 +21,11 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onLinkClick }) => {
       name: "Reviews",
       href: "/dashboard/reviews",
       icon: MessageSquareText,
+    },
+    {
+      name: "Integrations", // New navigation item
+      href: "/dashboard/integrations",
+      icon: PlugZap, // Using PlugZap icon for integrations
     },
     {
       name: "Settings",

@@ -9,7 +9,8 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import ReviewsPage from "./pages/ReviewsPage";
 import SettingsPage from "./pages/SettingsPage";
-import ReviewDetailsPage from "./pages/ReviewDetailsPage"; // Import the new ReviewDetailsPage
+import ReviewDetailsPage from "./pages/ReviewDetailsPage";
+import IntegrationsPage from "./pages/IntegrationsPage"; // Import the new IntegrationsPage
 
 const queryClient = new QueryClient();
 
@@ -26,8 +27,9 @@ const App = () => (
             <Route index element={<Dashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="reviews" element={<ReviewsPage />} />
-            <Route path="reviews/:reviewId" element={<ReviewDetailsPage />} /> {/* Route for ReviewDetailsPage */}
+            <Route path="reviews/:reviewId" element={<ReviewDetailsPage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="integrations" element={<IntegrationsPage />} /> {/* New route for IntegrationsPage */}
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
