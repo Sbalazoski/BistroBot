@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Link as LinkIcon, PlugOff } from "lucide-react"; // Renamed Link to LinkIcon to avoid conflict, added PlugOff
+import { ExternalLink, Link as LinkIcon, LinkOff } from "lucide-react"; // Changed PlugOff to LinkOff
 import { showSuccess, showError } from "@/utils/toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -105,7 +105,7 @@ const IntegrationsPage = () => {
                     <ExternalLink className="mr-2 h-4 w-4" /> Manage
                   </Button>
                   <Button variant="destructive" size="icon" onClick={() => handleDisconnect(integration.id, integration.name)}>
-                    <PlugOff className="h-4 w-4" />
+                    <LinkOff className="h-4 w-4" /> {/* Changed PlugOff to LinkOff */}
                     <span className="sr-only">Disconnect</span>
                   </Button>
                 </div>
