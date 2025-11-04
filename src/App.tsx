@@ -11,6 +11,7 @@ import ReviewsPage from "./pages/ReviewsPage";
 import SettingsPage from "./pages/SettingsPage";
 import ReviewDetailsPage from "./pages/ReviewDetailsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
+import ReplyTemplatesPage from "./pages/ReplyTemplatesPage"; // Import the new page
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 
@@ -67,6 +68,7 @@ const App = () => (
             <Route path="reviews/:reviewId" element={<ReviewDetailsPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="integrations" element={<IntegrationsPage />} />
+            <Route path="templates" element={<ReplyTemplatesPage />} /> {/* New route for templates */}
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
