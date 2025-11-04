@@ -46,6 +46,9 @@ const AuthPage = () => {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
+        <p className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
+          Overwhelmed by online reviews?
+        </p>
         <p className="text-md text-gray-600 dark:text-gray-300 mb-4">
           BistroBot helps restaurants automate review replies, manage online reputation, and maintain authenticity.
         </p>
