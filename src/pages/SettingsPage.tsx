@@ -1,5 +1,4 @@
 import React, { useState } from "react"; // Removed useEffect as it's no longer needed for theme or mock data init
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -102,7 +101,6 @@ const SettingsPage = () => {
           </Button>
         </div>
       </div>
-      <MadeWithDyad />
     </div>
   );
 };

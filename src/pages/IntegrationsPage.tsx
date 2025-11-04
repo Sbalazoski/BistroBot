@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Link as LinkIcon, PlugOff } from "lucide-react"; // Renamed Link to LinkIcon to avoid conflict, added PlugOff
@@ -148,7 +147,6 @@ const IntegrationsPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <MadeWithDyad />
     </div>
   );
 };

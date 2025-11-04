@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -222,7 +221,6 @@ const ReplyTemplatesPage = () => {
           <p className="col-span-full text-center text-muted-foreground">No templates defined yet. Click "Add New Template" to get started!</p>
         )}
       </div>
-      <MadeWithDyad />
     </div>
   );
 };

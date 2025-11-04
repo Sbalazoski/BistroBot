@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,7 +13,6 @@ import ReviewDetailsPage from "./pages/ReviewDetailsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import ReplyTemplatesPage from "./pages/ReplyTemplatesPage";
 import { supabase } from "@/lib/supabase";
-import { useEffect, useState } from "react";
 import { ThemeProvider } from "next-themes"; // Import ThemeProvider
 
 const queryClient = new QueryClient();

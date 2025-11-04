@@ -1,5 +1,4 @@
 import React from "react";
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import ReviewSummaryCard from "@/components/ReviewSummaryCard";
 import SentimentTrendChart from "@/components/SentimentTrendChart";
 import RecentReviewsList from "@/components/RecentReviewsList"; // Import the new component
@@ -23,7 +22,6 @@ const Dashboard = () => {
           More features will be added here soon.
         </p>
       </div>
-      <MadeWithDyad />
     </div>
   );
 };

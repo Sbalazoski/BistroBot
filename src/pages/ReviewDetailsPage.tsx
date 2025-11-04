@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +33,6 @@ const ReviewDetailsPage = () => {
         <Button onClick={() => navigate("/dashboard/reviews")}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Reviews
         </Button>
-        <MadeWithDyad />
       </div>
     );
   }
@@ -133,7 +131,6 @@ const ReviewDetailsPage = () => {
           </div>
         </CardContent>
       </Card>
-      <MadeWithDyad />
     </div>
   );
 };

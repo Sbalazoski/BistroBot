@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from "react";
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import {
   Table,
   TableBody,
@@ -149,7 +148,6 @@ const ReviewsPage = () => {
           </TableBody>
         </Table>
       </div>
-      <MadeWithDyad />
     </div>
   );
 };

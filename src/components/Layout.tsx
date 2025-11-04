@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Sidebar from "./Sidebar";
 import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast";
+import { MadeWithDyad } from "@/components/made-with-dyad"; // Import MadeWithDyad
 
 const Layout = () => {
   const isMobile = useIsMobile();
@@ -73,6 +74,7 @@ const Layout = () => {
         {/* Main Content */}
         <main className="flex-1 p-6 overflow-auto">
           <Outlet />
+          <MadeWithDyad /> {/* Add MadeWithDyad here */}
         </main>
       </div>
     </div>
