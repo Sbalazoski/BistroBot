@@ -9,65 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea"; // Import Textarea
 import { ArrowLeft, Sparkles } from "lucide-react"; // Import Sparkles icon
 import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
-
-// Mock data for reviews (should ideally come from an API or context)
-const mockReviews = [
-  {
-    id: "1",
-    platform: "Google",
-    customer: "Alice Wonderland",
-    rating: 5,
-    comment: "Amazing food and excellent service! Highly recommend the pasta. The ambiance was also very pleasant, and the staff were incredibly attentive. A truly delightful dining experience!",
-    sentiment: "Positive",
-    status: "Replied",
-    date: "2023-10-26",
-    reply: "Dear Alice, thank you for your wonderful feedback! We're thrilled you enjoyed our pasta and the ambiance. We look forward to welcoming you back soon!",
-  },
-  {
-    id: "2",
-    platform: "Yelp",
-    customer: "Bob Thebuilder",
-    rating: 2,
-    comment: "The wait was too long and the coffee was cold. I expected better service given the prices. It was a disappointing visit overall.",
-    sentiment: "Negative",
-    status: "Pending Reply",
-    date: "2023-10-25",
-    reply: null,
-  },
-  {
-    id: "3",
-    platform: "TripAdvisor",
-    customer: "Charlie Chaplin",
-    rating: 4,
-    comment: "Good atmosphere, decent food. Nothing spectacular but solid. The portions were generous, and the service was prompt.",
-    sentiment: "Neutral",
-    status: "Drafted",
-    date: "2023-10-24",
-    reply: "Hi Charlie, thanks for your feedback! We're glad you enjoyed the atmosphere and found the food decent. We're always striving to improve and hope to impress you even more on your next visit.",
-  },
-  {
-    id: "4",
-    platform: "Google",
-    customer: "Diana Prince",
-    rating: 5,
-    comment: "Best burger in town! Will definitely be back soon. The patty was juicy, the bun was fresh, and the toppings were perfect. A must-try!",
-    sentiment: "Positive",
-    status: "Pending Reply",
-    date: "2023-10-23",
-    reply: null,
-  },
-  {
-    id: "5",
-    platform: "Yelp",
-    customer: "Eve Harrington",
-    rating: 1,
-    comment: "Terrible experience. Food was undercooked and staff was rude. I will not be returning and do not recommend this place to anyone.",
-    sentiment: "Negative",
-    status: "Pending Reply",
-    date: "2023-10-22",
-    reply: null,
-  },
-];
+import { mockReviews } from "@/data/mockReviews"; // Import mockReviews
 
 const ReviewDetailsPage = () => {
   const { reviewId } = useParams<{ reviewId: string }>();
