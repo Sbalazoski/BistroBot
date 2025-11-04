@@ -4,6 +4,7 @@ import React from "react";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import ReviewSummaryCard from "@/components/ReviewSummaryCard";
 import SentimentTrendChart from "@/components/SentimentTrendChart";
+import RecentReviewsList from "@/components/RecentReviewsList"; // Import the new component
 
 const Dashboard = () => {
   return (
@@ -13,6 +14,8 @@ const Dashboard = () => {
       <ReviewSummaryCard />
 
       <SentimentTrendChart />
+
+      <RecentReviewsList /> {/* Add the new RecentReviewsList component here */}
 
       <div className="flex-grow p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         <p className="text-lg text-gray-600 dark:text-gray-300">
