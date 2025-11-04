@@ -11,9 +11,8 @@ import ReviewsPage from "./pages/ReviewsPage";
 import SettingsPage from "./pages/SettingsPage";
 import ReviewDetailsPage from "./pages/ReviewDetailsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
-import AuthPage from "./pages/AuthPage"; // Import AuthPage
-import { supabase } from "@/lib/supabase"; // Import supabase client
-import { useEffect, useState } from "react"; // Import useEffect and useState
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +41,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Or a spinner
   }
 
-  return session ? children : <Navigate to="/auth" />;
+  return session ? children : <Navigate to="/" />; // Redirect to the root path (Index page with Auth)
 };
 
 const App = () => (
@@ -52,8 +51,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<AuthPage />} /> {/* New Auth route */}
+          <Route path="/" element={<Index />} /> {/* Index page now includes AuthPage */}
           {/* Protected routes using the Layout component */}
           <Route
             path="/dashboard"

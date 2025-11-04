@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { showSuccess, showError } from "@/utils/toast";
-import { MadeWithDyad } from "@/components/made-with-dyad";
 
 const AuthPage = () => {
   const [email, setEmail] = useState("");
@@ -47,52 +46,49 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-stone-900 dark:via-zinc-900 dark:to-neutral-900 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="mx-auto h-24 w-24 mb-4" />
-          <CardTitle className="text-2xl">{isLogin ? "Login" : "Sign Up"}</CardTitle>
-          <CardDescription>
-            {isLogin ? "Enter your credentials to access your dashboard." : "Create an account to get started with BistroBot."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleAuth} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Loading..." : (isLogin ? "Login" : "Sign Up")}
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
-            <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="p-0 h-auto">
-              {isLogin ? "Sign Up" : "Login"}
-            </Button>
+    <Card className="w-full max-w-md">
+      <CardHeader className="text-center">
+        <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="mx-auto h-24 w-24 mb-4" />
+        <CardTitle className="text-2xl">{isLogin ? "Login" : "Sign Up"}</CardTitle>
+        <CardDescription>
+          {isLogin ? "Enter your credentials to access your dashboard." : "Create an account to get started with BistroBot."}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleAuth} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
-        </CardContent>
-      </Card>
-      <MadeWithDyad />
-    </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Loading..." : (isLogin ? "Login" : "Sign Up")}
+          </Button>
+        </form>
+        <div className="mt-4 text-center text-sm">
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="p-0 h-auto">
+            {isLogin ? "Sign Up" : "Login"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
