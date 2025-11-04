@@ -14,7 +14,6 @@ interface Integration {
   id: string;
   name: string;
   description: string;
-  icon: string;
   isConnected: boolean;
 }
 
@@ -23,21 +22,18 @@ const initialIntegrations: Integration[] = [
     id: "google-my-business",
     name: "Google My Business",
     description: "Connect your Google My Business account to ingest reviews and publish replies.",
-    icon: "/public/google-logo.png", // Placeholder for an actual logo
     isConnected: false,
   },
   {
     id: "yelp",
     name: "Yelp",
     description: "Integrate with Yelp to monitor reviews and respond directly.",
-    icon: "/public/yelp-logo.png", // Placeholder for an actual logo
     isConnected: true,
   },
   {
     id: "tripadvisor",
     name: "TripAdvisor",
     description: "Link your TripAdvisor account for comprehensive review management.",
-    icon: "/public/tripadvisor-logo.png", // Placeholder for an actual logo
     isConnected: false,
   },
 ];
@@ -102,9 +98,7 @@ const IntegrationsPage = () => {
           <Card key={integration.id} className="flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xl font-semibold">{integration.name}</CardTitle>
-              {integration.icon && (
-                <img src={integration.icon} alt={`${integration.name} Logo`} className="h-8 w-8" />
-              )}
+              {/* Removed img tag as logo files do not exist */}
             </CardHeader>
             <CardContent className="flex-grow">
               <CardDescription className="mb-4">{integration.description}</CardDescription>
