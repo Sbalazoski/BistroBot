@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"; // Import Button
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-stone-900 dark:via-zinc-900 dark:to-neutral-900">
       {/* Header is now part of the Layout component, so removed from Index */}
       <main className="flex-grow flex items-center justify-center">
         <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
