@@ -16,14 +16,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input"; // Import Input component
 import { mockReviews } from "@/data/mockReviews"; // Import mockReviews
 
 const ReviewsPage = () => {
   const [sentimentFilter, setSentimentFilter] = useState<string>("All");
   const [sortOrder, setSortOrder] = useState<string>("Newest"); // 'Newest' or 'Oldest'
+  const [searchQuery, setSearchQuery] = useState<string>(""); // New state for search query
 
   const filteredAndSortedReviews = useMemo(() => {
     let reviews = [...mockReviews];
+
+    // Filter by search query
+    if (searchQuery) {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      reviews = reviews.filter(
+        (review) =>
+          review.customer.toLowerCase().includes(lowerCaseQuery) ||
+          review.comment.toLowerCase().includes(lowerCaseQuery)
+      );
+    }
 
     // Filter by sentiment
     if (sentimentFilter !== "All") {
@@ -38,13 +50,20 @@ const ReviewsPage = () => {
     });
 
     return reviews;
-  }, [sentimentFilter, sortOrder]);
+  }, [sentimentFilter, sortOrder, searchQuery]); // Add searchQuery to dependencies
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Review Management</h2>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-4 items-center"> {/* Added items-center for alignment */}
+        <Input
+          placeholder="Search by customer or comment..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full sm:w-[300px]" // Adjusted width for responsiveness
+        />
+
         <div className="flex items-center gap-2">
           <label htmlFor="sentiment-filter" className="text-sm font-medium">Filter by Sentiment:</label>
           <Select value={sentimentFilter} onValueChange={setSentimentFilter}>
