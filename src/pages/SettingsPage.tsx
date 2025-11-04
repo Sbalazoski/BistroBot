@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react"; // Removed useEffect as it's no longer needed for theme or mock data init
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -15,67 +15,28 @@ const SettingsPage = () => {
   const { theme, setTheme } = useTheme(); // Get theme and setTheme from useTheme
   const [restaurantName, setRestaurantName] = useState("BistroBot Restaurant");
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Set initial loading to false as we're not fetching real data
 
-  // Initialize dark mode switch based on current theme
-  useEffect(() => {
-    setLoading(true);
-    // Simulate fetching user settings (including auto-reply)
-    const fetchSettings = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        // In a real app, you'd fetch settings from a 'profiles' or 'settings' table
-        // For now, we'll mock it or use a default
-        // Example: const { data, error } = await supabase.from('profiles').select('restaurant_name, auto_reply_enabled').eq('id', user.id).single();
-        // if (data) {
-        //   setRestaurantName(data.restaurant_name || "BistroBot Restaurant");
-        //   setAutoReplyEnabled(data.auto_reply_enabled || false);
-        // }
-        // For demonstration, let's just set some defaults
-        setRestaurantName("BistroBot Restaurant");
-        setAutoReplyEnabled(false); // Default to false
-      }
-      setLoading(false);
-    };
-
-    fetchSettings();
-  }, []);
-
-  // Update dark mode switch state when theme changes externally (e.g., system preference)
-  useEffect(() => {
-    setTheme(theme || "system"); // Ensure theme is set if it's undefined initially
-  }, [theme, setTheme]);
-
+  // No useEffect needed here for initial theme or mock data loading,
+  // as `next-themes` manages the theme and initial state is set above.
 
   const handleSaveSettings = async () => {
     setLoading(true);
+    // In a real app, this would update the settings in your Supabase database
+    // For now, we'll simulate a save operation.
+    console.log("Mock Saving settings:", { restaurantName, theme, autoReplyEnabled });
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      // In a real app, this would update the settings in your Supabase database
-      // Example: const { error } = await supabase.from('profiles').update({
-      //   restaurant_name: restaurantName,
-      //   auto_reply_enabled: autoReplyEnabled,
-      // }).eq('id', user.id);
-      // if (error) {
-      //   showError("Failed to save settings: " + error.message);
-      // } else {
-      //   showSuccess("Settings saved successfully!");
-      // }
       showSuccess("Settings saved successfully! (Mock save)");
-      console.log("Saving settings:", { restaurantName, theme, autoReplyEnabled });
     } else {
       showError("You must be logged in to save settings.");
     }
     setLoading(false);
   };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-[calc(100vh-128px)] items-center justify-center space-y-6">
-        <p className="text-lg text-gray-600 dark:text-gray-300">Loading settings...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
