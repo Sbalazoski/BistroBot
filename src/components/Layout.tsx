@@ -9,7 +9,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Sidebar from "./Sidebar";
 import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast";
-import BistroBotLogo from "/public/bistrologobistrobot.png"; // Import the logo
 
 const Layout = () => {
   const isMobile = useIsMobile();
@@ -38,7 +37,7 @@ const Layout = () => {
       {!isMobile && (
         <aside className="w-64 border-r bg-sidebar-background text-sidebar-foreground">
           <div className="flex items-center justify-center h-16 border-b">
-            <img src={BistroBotLogo} alt="BistroBot Logo" className="h-10 w-10 mr-2" /> {/* Adjusted size */}
+            <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-10 w-10 mr-2" /> {/* Adjusted size */}
             <h1 className="text-xl font-bold text-sidebar-primary">BistroBot</h1>
           </div>
           <Sidebar onLinkClick={handleLinkClick} />
@@ -58,7 +57,7 @@ const Layout = () => {
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col w-64 p-0">
                 <div className="flex items-center justify-center h-16 border-b">
-                  <img src={BistroBotLogo} alt="BistroBot Logo" className="h-10 w-10 mr-2" /> {/* Adjusted size */}
+                  <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-10 w-10 mr-2" /> {/* Adjusted size */}
                   <h1 className="text-xl font-bold text-primary">BistroBot</h1>
                 </div>
                 <Sidebar onLinkClick={handleLinkClick} />
