@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom"; // Import Link
 
 // Mock data for reviews
 const mockReviews = [
@@ -86,26 +87,52 @@ const ReviewsPage = () => {
           </TableHeader>
           <TableBody>
             {mockReviews.map((review) => (
-              <TableRow key={review.id}>
-                <TableCell>{review.platform}</TableCell>
-                <TableCell>{review.customer}</TableCell>
-                <TableCell>{review.rating} ⭐</TableCell>
-                <TableCell className="max-w-[200px] truncate">{review.comment}</TableCell>
+              <TableRow key={review.id} className="cursor-pointer hover:bg-muted/50">
                 <TableCell>
-                  <Badge
-                    variant={
-                      review.sentiment === "Positive"
-                        ? "default"
-                        : review.sentiment === "Negative"
-                        ? "destructive"
-                        : "secondary"
-                    }
-                  >
-                    {review.sentiment}
-                  </Badge>
+                  <Link to={`/dashboard/reviews/${review.id}`} className="block w-full h-full py-2">
+                    {review.platform}
+                  </Link>
                 </TableCell>
-                <TableCell>{review.status}</TableCell>
-                <TableCell>{review.date}</TableCell>
+                <TableCell>
+                  <Link to={`/dashboard/reviews/${review.id}`} className="block w-full h-full py-2">
+                    {review.customer}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Link to={`/dashboard/reviews/${review.id}`} className="block w-full h-full py-2">
+                    {review.rating} ⭐
+                  </Link>
+                </TableCell>
+                <TableCell className="max-w-[200px] truncate">
+                  <Link to={`/dashboard/reviews/${review.id}`} className="block w-full h-full py-2">
+                    {review.comment}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Link to={`/dashboard/reviews/${review.id}`} className="block w-full h-full py-2">
+                    <Badge
+                      variant={
+                        review.sentiment === "Positive"
+                          ? "default"
+                          : review.sentiment === "Negative"
+                          ? "destructive"
+                          : "secondary"
+                      }
+                    >
+                      {review.sentiment}
+                    </Badge>
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Link to={`/dashboard/reviews/${review.id}`} className="block w-full h-full py-2">
+                    {review.status}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Link to={`/dashboard/reviews/${review.id}`} className="block w-full h-full py-2">
+                    {review.date}
+                  </Link>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
