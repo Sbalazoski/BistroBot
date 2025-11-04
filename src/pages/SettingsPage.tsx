@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react"; // Removed useEffect as it's no longer needed for theme or mock data init
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -86,7 +84,7 @@ const SettingsPage = () => {
             <CardTitle>Display Settings</CardTitle>
             <CardDescription>Configure how the application looks.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+            <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <Label htmlFor="dark-mode">Enable Dark Mode</Label>
               <Switch

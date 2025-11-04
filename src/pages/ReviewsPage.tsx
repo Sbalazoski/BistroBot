@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useMemo } from "react";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import {

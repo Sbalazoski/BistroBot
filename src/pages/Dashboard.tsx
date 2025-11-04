@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import ReviewSummaryCard from "@/components/ReviewSummaryCard";

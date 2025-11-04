@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { LayoutDashboard, MessageSquareText, Settings, PlugZap, FileText } from "lucide-react"; // Import FileText icon
