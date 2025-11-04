@@ -7,7 +7,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
-import ReviewsPage from "./pages/ReviewsPage"; // Import the new ReviewsPage
+import ReviewsPage from "./pages/ReviewsPage";
+import SettingsPage from "./pages/SettingsPage"; // Import the new SettingsPage
 
 const queryClient = new QueryClient();
 
@@ -23,8 +24,8 @@ const App = () => (
           <Route path="/dashboard" element={<Layout />}>
             <Route index element={<Dashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="reviews" element={<ReviewsPage />} /> {/* Route for the ReviewsPage */}
-            <Route path="settings" element={<div>Settings Page</div>} /> {/* Placeholder */}
+            <Route path="reviews" element={<ReviewsPage />} />
+            <Route path="settings" element={<SettingsPage />} /> {/* Route for the SettingsPage */}
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
