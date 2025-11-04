@@ -1,50 +1,94 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Link as LinkIcon } from "lucide-react"; // Renamed Link to LinkIcon to avoid conflict
+import { ExternalLink, Link as LinkIcon, PlugOff } from "lucide-react"; // Renamed Link to LinkIcon to avoid conflict, added PlugOff
 import { showSuccess, showError } from "@/utils/toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+
+interface Integration {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  isConnected: boolean;
+}
+
+const initialIntegrations: Integration[] = [
+  {
+    id: "google-my-business",
+    name: "Google My Business",
+    description: "Connect your Google My Business account to ingest reviews and publish replies.",
+    icon: "/public/google-logo.png", // Placeholder for an actual logo
+    isConnected: false,
+  },
+  {
+    id: "yelp",
+    name: "Yelp",
+    description: "Integrate with Yelp to monitor reviews and respond directly.",
+    icon: "/public/yelp-logo.png", // Placeholder for an actual logo
+    isConnected: true,
+  },
+  {
+    id: "tripadvisor",
+    name: "TripAdvisor",
+    description: "Link your TripAdvisor account for comprehensive review management.",
+    icon: "/public/tripadvisor-logo.png", // Placeholder for an actual logo
+    isConnected: false,
+  },
+];
 
 const IntegrationsPage = () => {
-  const handleConnect = (platform: string) => {
-    // Simulate connection process
-    showSuccess(`Connecting to ${platform}... (This is a mock action)`);
-    console.log(`Attempting to connect to ${platform}`);
-    // In a real app, this would initiate an OAuth flow or API key setup
+  const [integrations, setIntegrations] = useState<Integration[]>(initialIntegrations);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
+  const [apiKey, setApiKey] = useState("");
+
+  const handleConnectClick = (integration: Integration) => {
+    setSelectedIntegration(integration);
+    setApiKey(""); // Clear previous API key
+    setIsDialogOpen(true);
+  };
+
+  const handleConfirmConnect = () => {
+    if (!selectedIntegration) return;
+
+    // In a real app, you'd validate the API key and make an actual connection
+    if (apiKey.trim() === "") {
+      showError("Please enter an API Key or Account ID.");
+      return;
+    }
+
+    setIntegrations(integrations.map(integration =>
+      integration.id === selectedIntegration.id
+        ? { ...integration, isConnected: true }
+        : integration
+    ));
+    showSuccess(`Successfully connected to ${selectedIntegration.name}!`);
+    setIsDialogOpen(false);
+    setSelectedIntegration(null);
+    setApiKey("");
+  };
+
+  const handleDisconnect = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to disconnect from ${name}?`)) {
+      setIntegrations(integrations.map(integration =>
+        integration.id === id
+          ? { ...integration, isConnected: false }
+          : integration
+      ));
+      showSuccess(`Disconnected from ${name}.`);
+    }
   };
 
   const handleManage = (platform: string) => {
-    // Simulate managing an existing integration
     showSuccess(`Managing ${platform} integration... (This is a mock action)`);
     console.log(`Managing ${platform}`);
-    // In a real app, this would navigate to a platform-specific settings page
   };
-
-  const integrations = [
-    {
-      id: "google-my-business",
-      name: "Google My Business",
-      description: "Connect your Google My Business account to ingest reviews and publish replies.",
-      icon: "/public/google-logo.png", // Placeholder for an actual logo
-      isConnected: false,
-    },
-    {
-      id: "yelp",
-      name: "Yelp",
-      description: "Integrate with Yelp to monitor reviews and respond directly.",
-      icon: "/public/yelp-logo.png", // Placeholder for an actual logo
-      isConnected: true,
-    },
-    {
-      id: "tripadvisor",
-      name: "TripAdvisor",
-      description: "Link your TripAdvisor account for comprehensive review management.",
-      icon: "/public/tripadvisor-logo.png", // Placeholder for an actual logo
-      isConnected: false,
-    },
-  ];
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
@@ -58,7 +102,6 @@ const IntegrationsPage = () => {
           <Card key={integration.id} className="flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xl font-semibold">{integration.name}</CardTitle>
-              {/* Placeholder for platform icon */}
               {integration.icon && (
                 <img src={integration.icon} alt={`${integration.name} Logo`} className="h-8 w-8" />
               )}
@@ -66,11 +109,17 @@ const IntegrationsPage = () => {
             <CardContent className="flex-grow">
               <CardDescription className="mb-4">{integration.description}</CardDescription>
               {integration.isConnected ? (
-                <Button variant="outline" onClick={() => handleManage(integration.name)}>
-                  <ExternalLink className="mr-2 h-4 w-4" /> Manage
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => handleManage(integration.name)}>
+                    <ExternalLink className="mr-2 h-4 w-4" /> Manage
+                  </Button>
+                  <Button variant="destructive" size="icon" onClick={() => handleDisconnect(integration.id, integration.name)}>
+                    <PlugOff className="h-4 w-4" />
+                    <span className="sr-only">Disconnect</span>
+                  </Button>
+                </div>
               ) : (
-                <Button onClick={() => handleConnect(integration.name)}>
+                <Button onClick={() => handleConnectClick(integration)}>
                   <LinkIcon className="mr-2 h-4 w-4" /> Connect
                 </Button>
               )}
@@ -78,6 +127,35 @@ const IntegrationsPage = () => {
           </Card>
         ))}
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Connect to {selectedIntegration?.name}</DialogTitle>
+            <DialogDescription>
+              Enter your API Key or Account ID to connect BistroBot with {selectedIntegration?.name}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="api-key" className="text-right">
+                API Key / ID
+              </Label>
+              <Input
+                id="api-key"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="col-span-3"
+                placeholder="e.g., sk-xxxxxxxxxxxxxxxxxxxx"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleConfirmConnect}>Confirm Connection</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <MadeWithDyad />
     </div>
   );
