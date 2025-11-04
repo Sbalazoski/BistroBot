@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Header = () => {
+const LandingHeader = () => {
   return (
     <header className="bg-background border-b border-border p-4 flex items-center justify-center shadow-sm">
       <div className="flex items-center space-x-3">
@@ -11,4 +11,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default LandingHeader;
