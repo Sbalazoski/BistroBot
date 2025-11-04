@@ -1,4 +1,4 @@
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -49,7 +49,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="system" attribute="class"> {/* Wrap with ThemeProvider */}
       <TooltipProvider>
-        <Sonner /> {/* Only Sonner is used for toasts */}
+        <Toaster /> {/* Only Sonner is used for toasts */}
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} /> {/* Index page now includes AuthPage */}
