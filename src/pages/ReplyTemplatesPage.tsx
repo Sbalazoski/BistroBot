@@ -10,6 +10,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from "@/components/ui/label";
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"; // Import Select components
+import { Badge } from "@/components/ui/badge"; // Import Badge component
 
 interface ReplyTemplate {
   id: string;
@@ -103,6 +111,20 @@ const ReplyTemplatesPage = () => {
     setIsDialogOpen(true);
   };
 
+  const getSentimentBadgeVariant = (sentiment: ReplyTemplate['sentiment']) => {
+    switch (sentiment) {
+      case "Positive":
+        return "default"; // Greenish
+      case "Negative":
+        return "destructive"; // Red
+      case "Neutral":
+        return "secondary"; // Gray
+      case "All":
+      default:
+        return "outline"; // Default/outline for 'All'
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
       <div className="flex items-center justify-between">
@@ -147,17 +169,17 @@ const ReplyTemplatesPage = () => {
                 <Label htmlFor="template-sentiment" className="text-right">
                   Sentiment
                 </Label>
-                <select
-                  id="template-sentiment"
-                  value={templateSentiment}
-                  onChange={(e) => setTemplateSentiment(e.target.value as ReplyTemplate['sentiment'])}
-                  className="col-span-3 p-2 border rounded-md bg-background text-foreground"
-                >
-                  <option value="All">All</option>
-                  <option value="Positive">Positive</option>
-                  <option value="Neutral">Neutral</option>
-                  <option value="Negative">Negative</option>
-                </select>
+                <Select value={templateSentiment} onValueChange={(value: ReplyTemplate['sentiment']) => setTemplateSentiment(value)}>
+                  <SelectTrigger id="template-sentiment" className="col-span-3">
+                    <SelectValue placeholder="Select sentiment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All</SelectItem>
+                    <SelectItem value="Positive">Positive</SelectItem>
+                    <SelectItem value="Neutral">Neutral</SelectItem>
+                    <SelectItem value="Negative">Negative</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <DialogFooter>
@@ -189,8 +211,8 @@ const ReplyTemplatesPage = () => {
                     </Button>
                   </div>
                 </CardTitle>
-                <CardDescription>
-                  Sentiment: <span className="font-medium">{template.sentiment}</span>
+                <CardDescription className="flex items-center gap-2">
+                  Sentiment: <Badge variant={getSentimentBadgeVariant(template.sentiment)}>{template.sentiment}</Badge>
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
