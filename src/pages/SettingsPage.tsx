@@ -7,18 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { showSuccess, showError } from "@/utils/toast"; // Import toast utility
-import { supabase } from "@/lib/supabase"; // Import supabase client
+import { showSuccess, showError } from "@/utils/toast";
+import { supabase } from "@/lib/supabase";
+import { useTheme } from "next-themes"; // Import useTheme
 
 const SettingsPage = () => {
+  const { theme, setTheme } = useTheme(); // Get theme and setTheme from useTheme
   const [restaurantName, setRestaurantName] = useState("BistroBot Restaurant");
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
-  const [autoReplyEnabled, setAutoReplyEnabled] = useState(false); // New state for auto-reply
+  const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Initialize dark mode switch based on current theme
   useEffect(() => {
+    setLoading(true);
+    // Simulate fetching user settings (including auto-reply)
     const fetchSettings = async () => {
-      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         // In a real app, you'd fetch settings from a 'profiles' or 'settings' table
@@ -38,6 +41,12 @@ const SettingsPage = () => {
     fetchSettings();
   }, []);
 
+  // Update dark mode switch state when theme changes externally (e.g., system preference)
+  useEffect(() => {
+    setTheme(theme || "system"); // Ensure theme is set if it's undefined initially
+  }, [theme, setTheme]);
+
+
   const handleSaveSettings = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
@@ -53,7 +62,7 @@ const SettingsPage = () => {
       //   showSuccess("Settings saved successfully!");
       // }
       showSuccess("Settings saved successfully! (Mock save)");
-      console.log("Saving settings:", { restaurantName, darkModeEnabled, autoReplyEnabled });
+      console.log("Saving settings:", { restaurantName, theme, autoReplyEnabled });
     } else {
       showError("You must be logged in to save settings.");
     }
@@ -121,8 +130,8 @@ const SettingsPage = () => {
               <Label htmlFor="dark-mode">Enable Dark Mode</Label>
               <Switch
                 id="dark-mode"
-                checked={darkModeEnabled}
-                onCheckedChange={setDarkModeEnabled}
+                checked={theme === "dark"} // Check if current theme is dark
+                onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} // Set theme based on switch
               />
             </div>
           </CardContent>

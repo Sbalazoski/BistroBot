@@ -11,9 +11,10 @@ import ReviewsPage from "./pages/ReviewsPage";
 import SettingsPage from "./pages/SettingsPage";
 import ReviewDetailsPage from "./pages/ReviewDetailsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
-import ReplyTemplatesPage from "./pages/ReplyTemplatesPage"; // Import the new page
+import ReplyTemplatesPage from "./pages/ReplyTemplatesPage";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { ThemeProvider } from "next-themes"; // Import ThemeProvider
 
 const queryClient = new QueryClient();
 
@@ -47,33 +48,35 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} /> {/* Index page now includes AuthPage */}
-          {/* Protected routes using the Layout component */}
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Layout />
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<Dashboard />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="reviews" element={<ReviewsPage />} />
-            <Route path="reviews/:reviewId" element={<ReviewDetailsPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="integrations" element={<IntegrationsPage />} />
-            <Route path="templates" element={<ReplyTemplatesPage />} /> {/* New route for templates */}
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider defaultTheme="system" attribute="class"> {/* Wrap with ThemeProvider */}
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} /> {/* Index page now includes AuthPage */}
+            {/* Protected routes using the Layout component */}
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Layout />
+                </PrivateRoute>
+              }
+            >
+              <Route index element={<Dashboard />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="reviews" element={<ReviewsPage />} />
+              <Route path="reviews/:reviewId" element={<ReviewDetailsPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="integrations" element={<IntegrationsPage />} />
+              <Route path="templates" element={<ReplyTemplatesPage />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
