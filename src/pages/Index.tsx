@@ -8,6 +8,7 @@ const Index = () => {
       {/* Header is now part of the Layout component, so removed from Index */}
       <main className="flex-grow flex items-center justify-center">
         <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+          <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="mx-auto h-32 w-32 mb-6" /> {/* Added large logo */}
           <h2 className="text-4xl font-bold mb-4 text-gray-800 dark:text-gray-100">Welcome to BistroBot!</h2>
           <p className="text-xl text-gray-600 dark:text-gray-300">
             Your intelligent assistant for automating restaurant review replies.
