@@ -46,7 +46,7 @@ const AuthPage = () => {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
-        <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="mx-auto h-32 w-32 mb-4" /> {/* Increased size */}
+        <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="mx-auto h-48 w-48 mb-4" /> {/* Increased to h-48 w-48 */}
         <CardTitle className="text-2xl">{isLogin ? "Login" : "Sign Up"}</CardTitle>
         <CardDescription>
           {isLogin ? "Enter your credentials to access your dashboard." : "Create an account to get started with BistroBot."}
