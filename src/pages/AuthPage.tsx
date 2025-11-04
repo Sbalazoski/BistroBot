@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { showSuccess, showError } from "@/utils/toast";
+import BistroBotLogo from "/public/bistrologobistrobot.png"; // Import the logo
 
 const AuthPage = () => {
   const [email, setEmail] = useState("");
@@ -48,7 +49,7 @@ const AuthPage = () => {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
-        <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="mx-auto h-72 w-72 mb-4" /> {/* Increased size */}
+        <img src={BistroBotLogo} alt="BistroBot Logo" className="mx-auto h-24 w-24 mb-4" /> {/* Adjusted size */}
         <CardTitle className="text-2xl">{isLogin ? "Login" : "Sign Up"}</CardTitle>
         <CardDescription>
           {isLogin ? "Enter your credentials to access your dashboard." : "Create an account to get started with BistroBot."}
