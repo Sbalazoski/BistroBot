@@ -12,25 +12,7 @@ import { MadeWithDyad } from "@/components/made-with-dyad"; // Import MadeWithDy
 const Layout = () => {
   const isMobile = useIsMobile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null); // State to hold user email
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserEmail(user.email);
-      }
-    };
-
-    fetchUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUserEmail(session?.user?.email || null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const handleLinkClick = () => {
     if (isMobile) {
@@ -53,12 +35,9 @@ const Layout = () => {
       {/* Desktop Sidebar */}
       {!isMobile && (
         <aside className="w-64 border-r bg-sidebar-background text-sidebar-foreground">
-          <div className="flex flex-col items-center justify-center h-32 border-b py-4"> {/* Increased height for logo and info */}
-            <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-16 w-16 mb-2" />
+          <div className="flex items-center justify-center h-16 border-b">
+            <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-16 w-16 mr-2" /> {/* Increased to h-16 w-16 */}
             <h1 className="text-xl font-bold text-sidebar-primary">BistroBot</h1>
-            {userEmail && (
-              <p className="text-sm text-muted-foreground mt-1">{userEmail}</p> {/* Info header */}
-            )}
           </div>
           <Sidebar onLinkClick={handleLinkClick} />
         </aside>
@@ -76,12 +55,9 @@ const Layout = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col w-64 p-0">
-                <div className="flex flex-col items-center justify-center h-32 border-b py-4"> {/* Increased height for logo and info */}
-                  <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-16 w-16 mb-2" />
+                <div className="flex items-center justify-center h-16 border-b">
+                  <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-16 w-16 mr-2" /> {/* Increased to h-16 w-16 */}
                   <h1 className="text-xl font-bold text-primary">BistroBot</h1>
-                  {userEmail && (
-                    <p className="text-sm text-muted-foreground mt-1">{userEmail}</p> {/* Info header */}
-                  )}
                 </div>
                 <Sidebar onLinkClick={handleLinkClick} />
               </SheetContent>
@@ -98,7 +74,7 @@ const Layout = () => {
         {/* Main Content */}
         <main className="flex-1 p-6 overflow-auto">
           <Outlet />
-          <MadeWithDyad />
+          <MadeWithDyad /> {/* Add MadeWithDyad here */}
         </main>
       </div>
     </div>
