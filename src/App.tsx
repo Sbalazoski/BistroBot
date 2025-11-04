@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
@@ -10,9 +10,40 @@ import Dashboard from "./pages/Dashboard";
 import ReviewsPage from "./pages/ReviewsPage";
 import SettingsPage from "./pages/SettingsPage";
 import ReviewDetailsPage from "./pages/ReviewDetailsPage";
-import IntegrationsPage from "./pages/IntegrationsPage"; // Import the new IntegrationsPage
+import IntegrationsPage from "./pages/IntegrationsPage";
+import AuthPage from "./pages/AuthPage"; // Import AuthPage
+import { supabase } from "@/lib/supabase"; // Import supabase client
+import { useEffect, useState } from "react"; // Import useEffect and useState
 
 const queryClient = new QueryClient();
+
+// PrivateRoute component to protect routes
+const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Or a spinner
+  }
+
+  return session ? children : <Navigate to="/auth" />;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -22,14 +53,22 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<AuthPage />} /> {/* New Auth route */}
           {/* Protected routes using the Layout component */}
-          <Route path="/dashboard" element={<Layout />}>
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Layout />
+              </PrivateRoute>
+            }
+          >
             <Route index element={<Dashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="reviews" element={<ReviewsPage />} />
             <Route path="reviews/:reviewId" element={<ReviewDetailsPage />} />
             <Route path="settings" element={<SettingsPage />} />
-            <Route path="integrations" element={<IntegrationsPage />} /> {/* New route for IntegrationsPage */}
+            <Route path="integrations" element={<IntegrationsPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

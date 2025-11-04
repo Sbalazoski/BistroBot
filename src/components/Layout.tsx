@@ -1,20 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
-import { Menu } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { Menu, LogOut } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Sidebar from "./Sidebar";
+import { supabase } from "@/lib/supabase"; // Import supabase client
+import { showSuccess, showError } from "@/utils/toast";
 
 const Layout = () => {
   const isMobile = useIsMobile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleLinkClick = () => {
     if (isMobile) {
       setIsSheetOpen(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      showError("Failed to log out: " + error.message);
+    } else {
+      showSuccess("Logged out successfully!");
+      navigate("/"); // Redirect to home or login page after logout
     }
   };
 
@@ -24,7 +37,7 @@ const Layout = () => {
       {!isMobile && (
         <aside className="w-64 border-r bg-sidebar-background text-sidebar-foreground">
           <div className="flex items-center justify-center h-16 border-b">
-            <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-12 w-12 mr-2" /> {/* Increased size */}
+            <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-12 w-12 mr-2" />
             <h1 className="text-xl font-bold text-sidebar-primary">BistroBot</h1>
           </div>
           <Sidebar onLinkClick={handleLinkClick} />
@@ -33,7 +46,7 @@ const Layout = () => {
 
       <div className="flex flex-col flex-1">
         {/* Header */}
-        <header className="flex items-center justify-between h-16 px-4 border-b bg-background shadow-sm lg:justify-end">
+        <header className="flex items-center justify-between h-16 px-4 border-b bg-background shadow-sm">
           {isMobile && (
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
@@ -44,16 +57,18 @@ const Layout = () => {
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col w-64 p-0">
                 <div className="flex items-center justify-center h-16 border-b">
-                  <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-12 w-12 mr-2" /> {/* Increased size */}
+                  <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-12 w-12 mr-2" />
                   <h1 className="text-xl font-bold text-primary">BistroBot</h1>
                 </div>
                 <Sidebar onLinkClick={handleLinkClick} />
               </SheetContent>
             </Sheet>
           )}
-          {/* Placeholder for user menu/profile if needed */}
-          <div className="flex items-center space-x-4">
-            {/* Add user profile/settings here later */}
+          <div className="flex-grow flex justify-end items-center space-x-4">
+            <Button variant="ghost" onClick={handleLogout} className="flex items-center gap-2">
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
           </div>
         </header>
 
