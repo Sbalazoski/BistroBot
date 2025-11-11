@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Link as LinkIcon, Link2Off } from "lucide-react"; // Corrected import to Link2Off
+import { ExternalLink, Link as LinkIcon, Link2Off, Loader2 } from "lucide-react"; // Added Loader2 icon
 import { showSuccess, showError } from "@/utils/toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -40,6 +42,7 @@ const IntegrationsPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
   const [apiKey, setApiKey] = useState("");
+  const [isConnecting, setIsConnecting] = useState(false); // New state for loading during connection
 
   const handleConnectClick = (integration: Integration) => {
     setSelectedIntegration(integration);
@@ -47,21 +50,29 @@ const IntegrationsPage = () => {
     setIsDialogOpen(true);
   };
 
-  const handleConfirmConnect = () => {
+  const handleConfirmConnect = async () => {
     if (!selectedIntegration) return;
 
-    // In a real app, you'd validate the API key and make an actual connection
     if (apiKey.trim() === "") {
       showError("Please enter an API Key or Account ID.");
       return;
     }
 
+    setIsConnecting(true); // Start loading
+    // Simulate API call delay for OAuth initiation/token exchange
+    await new Promise(resolve => setTimeout(resolve, 2000)); 
+
+    // In a real app, this would involve sending the API key to your backend
+    // and your backend initiating the OAuth flow or direct API connection.
+    // For now, we simulate success.
     setIntegrations(integrations.map(integration =>
       integration.id === selectedIntegration.id
         ? { ...integration, isConnected: true }
         : integration
     ));
     showSuccess(`Successfully connected to ${selectedIntegration.name}!`);
+    
+    setIsConnecting(false); // End loading
     setIsDialogOpen(false);
     setSelectedIntegration(null);
     setApiKey("");
@@ -95,7 +106,6 @@ const IntegrationsPage = () => {
           <Card key={integration.id} className="flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xl font-semibold">{integration.name}</CardTitle>
-              {/* Removed img tag as logo files do not exist */}
             </CardHeader>
             <CardContent className="flex-grow">
               <CardDescription className="mb-4">{integration.description}</CardDescription>
@@ -105,13 +115,18 @@ const IntegrationsPage = () => {
                     <ExternalLink className="mr-2 h-4 w-4" /> Manage
                   </Button>
                   <Button variant="destructive" size="icon" onClick={() => handleDisconnect(integration.id, integration.name)}>
-                    <Link2Off className="h-4 w-4" /> {/* Corrected to Link2Off */}
+                    <Link2Off className="h-4 w-4" />
                     <span className="sr-only">Disconnect</span>
                   </Button>
                 </div>
               ) : (
-                <Button onClick={() => handleConnectClick(integration)}>
-                  <LinkIcon className="mr-2 h-4 w-4" /> Connect
+                <Button onClick={() => handleConnectClick(integration)} disabled={isConnecting}>
+                  {isConnecting && selectedIntegration?.id === integration.id ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <LinkIcon className="mr-2 h-4 w-4" />
+                  )}
+                  Connect
                 </Button>
               )}
             </CardContent>
@@ -125,6 +140,7 @@ const IntegrationsPage = () => {
             <DialogTitle>Connect to {selectedIntegration?.name}</DialogTitle>
             <DialogDescription>
               Enter your API Key or Account ID to connect BistroBot with {selectedIntegration?.name}.
+              For OAuth-based integrations, this might initiate a redirect.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -140,10 +156,31 @@ const IntegrationsPage = () => {
                 placeholder="e.g., sk-xxxxxxxxxxxxxxxxxxxx"
               />
             </div>
+            {/* Placeholder for OAuth Redirect URL */}
+            <div className="grid grid-cols-4 items-center gap-4 text-sm text-muted-foreground">
+              <Label htmlFor="oauth-redirect" className="text-right">
+                Redirect URL
+              </Label>
+              <Input
+                id="oauth-redirect"
+                value="https://your-backend.com/api/oauth/callback" // Example placeholder
+                readOnly
+                className="col-span-3 bg-muted cursor-not-allowed"
+              />
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleConfirmConnect}>Confirm Connection</Button>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isConnecting}>Cancel</Button>
+            <Button onClick={handleConfirmConnect} disabled={isConnecting}>
+              {isConnecting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connecting...
+                </>
+              ) : (
+                "Confirm Connection"
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
