@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Menu, LogOut } from "lucide-react";
+import { Menu, LogOut, Sun, Moon } from "lucide-react"; // Import Sun and Moon icons
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -8,11 +8,13 @@ import Sidebar from "./Sidebar";
 import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast";
 import { MadeWithDyad } from "@/components/made-with-dyad"; // Import MadeWithDyad
+import { useTheme } from "next-themes"; // Import useTheme
 
 const Layout = () => {
   const isMobile = useIsMobile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme(); // Get theme and setTheme from useTheme
 
   const handleLinkClick = () => {
     if (isMobile) {
@@ -28,6 +30,10 @@ const Layout = () => {
       showSuccess("Logged out successfully!");
       navigate("/"); // Redirect to home or login page after logout
     }
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -64,6 +70,14 @@ const Layout = () => {
             </Sheet>
           )}
           <div className="flex-grow flex justify-end items-center space-x-4">
+            <Button variant="ghost" size="icon" onClick={toggleTheme}>
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+              <span className="sr-only">Toggle theme</span>
+            </Button>
             <Button variant="ghost" onClick={handleLogout} className="flex items-center gap-2">
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Logout</span>
