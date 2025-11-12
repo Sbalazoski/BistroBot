@@ -3,10 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea"; // Import Textarea
-import { ArrowLeft, Sparkles } from "lucide-react"; // Import Sparkles icon
-import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
-import { mockReviews } from "@/data/mockReviews"; // Import mockReviews
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, Sparkles, Loader2 } from "lucide-react"; // Import Loader2 icon
+import { showSuccess, showError } from "@/utils/toast";
+import { mockReviews } from "@/data/mockReviews";
 
 const ReviewDetailsPage = () => {
   const { reviewId } = useParams<{ reviewId: string }>();
@@ -14,6 +14,8 @@ const ReviewDetailsPage = () => {
   const review = mockReviews.find((r) => r.id === reviewId);
 
   const [replyContent, setReplyContent] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState(false); // State for AI generation loading
+  const [isSaving, setIsSaving] = useState(false); // State for saving/publishing loading
 
   useEffect(() => {
     if (review?.reply) {
@@ -37,14 +39,18 @@ const ReviewDetailsPage = () => {
     );
   }
 
-  const handleGenerateReply = () => {
+  const handleGenerateReply = async () => {
+    setIsGenerating(true);
+    // Simulate AI generation delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
     let generatedReply = "";
     switch (review.sentiment) {
       case "Positive":
-        generatedReply = `Thank you, ${review.customer}, for your wonderful ${review.rating}-star review! We're thrilled to hear you enjoyed your experience. We look forward to serving you again soon!`;
+        generatedReply = `Dear ${review.customer}, thank you for your wonderful ${review.rating}-star review! We're thrilled to hear you enjoyed your experience. We look forward to serving you again soon!`;
         break;
       case "Negative":
-        generatedReply = `Dear ${review.customer}, we are truly sorry to hear about your experience. We take your feedback seriously and are committed to improving. Please contact us directly so we can make things right.`;
+        generatedReply = `Dear ${review.customer}, we are truly sorry to hear about your recent experience. We take your feedback seriously and are committed to improving. Please contact us directly at [Your Contact Info] so we can make things right.`;
         break;
       case "Neutral":
         generatedReply = `Hi ${review.customer}, thank you for your feedback. We appreciate you sharing your thoughts and are always looking for ways to enhance our service. We hope to see you again!`;
@@ -54,22 +60,31 @@ const ReviewDetailsPage = () => {
     }
     setReplyContent(generatedReply);
     showSuccess("AI reply generated!");
+    setIsGenerating(false);
   };
 
-  const handleSaveDraft = () => {
+  const handleSaveDraft = async () => {
+    setIsSaving(true);
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
     // In a real app, this would send the replyContent to the backend to save as a draft
     showSuccess("Reply draft saved!");
     console.log("Saving draft:", replyContent);
+    setIsSaving(false);
   };
 
-  const handlePublishReply = () => {
+  const handlePublishReply = async () => {
     if (!replyContent.trim()) {
       showError("Reply cannot be empty to publish.");
       return;
     }
+    setIsSaving(true);
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
     // In a real app, this would send the replyContent to the backend to publish
     showSuccess("Reply published successfully!");
     console.log("Publishing reply:", replyContent);
+    setIsSaving(false);
   };
 
   return (
@@ -115,18 +130,42 @@ const ReviewDetailsPage = () => {
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               className="min-h-[120px]"
+              disabled={isGenerating || isSaving}
             />
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button variant="secondary" onClick={handleGenerateReply}>
-              <Sparkles className="mr-2 h-4 w-4" /> Generate Reply
+            <Button variant="secondary" onClick={handleGenerateReply} disabled={isGenerating || isSaving}>
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" /> Generate Reply
+                </>
+              )}
             </Button>
-            <Button variant="outline" onClick={handleSaveDraft}>
-              Save Draft
+            <Button variant="outline" onClick={handleSaveDraft} disabled={isSaving || isGenerating}>
+              {isSaving && !isGenerating ? ( // Only show saving for save/publish, not during generation
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Draft"
+              )}
             </Button>
-            <Button onClick={handlePublishReply}>
-              Publish Reply
+            <Button onClick={handlePublishReply} disabled={isSaving || isGenerating}>
+              {isSaving && !isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Publishing...
+                </>
+              ) : (
+                "Publish Reply"
+              )}
             </Button>
           </div>
         </CardContent>
