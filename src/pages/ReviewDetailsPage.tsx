@@ -4,28 +4,52 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Sparkles, Loader2 } from "lucide-react"; // Import Loader2 icon
+import { ArrowLeft, Sparkles, Loader2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { mockReviews } from "@/data/mockReviews";
+
+// Define a type for the review history entry
+interface ReviewHistoryEntry {
+  timestamp: string;
+  action: string;
+}
+
+// Extend the mock review type to include history
+interface ReviewWithHistory {
+  id: string;
+  platform: string;
+  customer: string;
+  rating: number;
+  comment: string;
+  sentiment: "Positive" | "Negative" | "Neutral";
+  status: "Pending Reply" | "Drafted" | "Replied";
+  date: string;
+  reply: string | null;
+  history: ReviewHistoryEntry[];
+}
 
 const ReviewDetailsPage = () => {
   const { reviewId } = useParams<{ reviewId: string }>();
   const navigate = useNavigate();
-  const review = mockReviews.find((r) => r.id === reviewId);
+  
+  // Find the initial review from mock data
+  const initialReview = mockReviews.find((r) => r.id === reviewId) as ReviewWithHistory | undefined;
 
+  // Use local state to manage the review details, allowing updates
+  const [localReview, setLocalReview] = useState<ReviewWithHistory | null>(initialReview || null);
   const [replyContent, setReplyContent] = useState<string>("");
-  const [isGenerating, setIsGenerating] = useState(false); // State for AI generation loading
-  const [isSaving, setIsSaving] = useState(false); // State for saving/publishing loading
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (review?.reply) {
-      setReplyContent(review.reply);
+    if (localReview?.reply) {
+      setReplyContent(localReview.reply);
     } else {
       setReplyContent("");
     }
-  }, [review]);
+  }, [localReview]);
 
-  if (!review) {
+  if (!localReview) {
     return (
       <div className="flex flex-col min-h-[calc(100vh-128px)] items-center justify-center space-y-6">
         <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Review Not Found</h2>
@@ -39,35 +63,45 @@ const ReviewDetailsPage = () => {
     );
   }
 
+  const addHistoryEntry = (action: string) => {
+    setLocalReview(prev => {
+      if (!prev) return null;
+      const newHistory = [...prev.history, { timestamp: new Date().toISOString(), action }];
+      return { ...prev, history: newHistory };
+    });
+  };
+
   const handleGenerateReply = async () => {
     setIsGenerating(true);
-    // Simulate AI generation delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     let generatedReply = "";
-    switch (review.sentiment) {
+    switch (localReview.sentiment) {
       case "Positive":
-        generatedReply = `Dear ${review.customer}, thank you for your wonderful ${review.rating}-star review! We're thrilled to hear you enjoyed your experience. We look forward to serving you again soon!`;
+        generatedReply = `Dear ${localReview.customer}, thank you for your wonderful ${localReview.rating}-star review! We're thrilled to hear you enjoyed your experience. We look forward to serving you again soon!`;
         break;
       case "Negative":
-        generatedReply = `Dear ${review.customer}, we are truly sorry to hear about your recent experience. We take your feedback seriously and are committed to improving. Please contact us directly at [Your Contact Info] so we can make things right.`;
+        generatedReply = `Dear ${localReview.customer}, we are truly sorry to hear about your recent experience. We take your feedback seriously and are committed to improving. Please contact us directly at [Your Contact Info] so we can make things right.`;
         break;
       case "Neutral":
-        generatedReply = `Hi ${review.customer}, thank you for your feedback. We appreciate you sharing your thoughts and are always looking for ways to enhance our service. We hope to see you again!`;
+        generatedReply = `Hi ${localReview.customer}, thank you for your feedback. We appreciate you sharing your thoughts and are always looking for ways to enhance our service. We hope to see you again!`;
         break;
       default:
-        generatedReply = `Thank you for your review, ${review.customer}! We appreciate your feedback.`;
+        generatedReply = `Thank you for your review, ${localReview.customer}! We appreciate your feedback.`;
     }
     setReplyContent(generatedReply);
+    addHistoryEntry("AI drafted reply");
+    setLocalReview(prev => prev ? { ...prev, status: "Drafted", reply: generatedReply } : null);
     showSuccess("AI reply generated!");
     setIsGenerating(false);
   };
 
   const handleSaveDraft = async () => {
     setIsSaving(true);
-    // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
-    // In a real app, this would send the replyContent to the backend to save as a draft
+    
+    addHistoryEntry("User saved draft");
+    setLocalReview(prev => prev ? { ...prev, status: "Drafted", reply: replyContent } : null);
     showSuccess("Reply draft saved!");
     console.log("Saving draft:", replyContent);
     setIsSaving(false);
@@ -79,9 +113,10 @@ const ReviewDetailsPage = () => {
       return;
     }
     setIsSaving(true);
-    // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
-    // In a real app, this would send the replyContent to the backend to publish
+    
+    addHistoryEntry("User published reply");
+    setLocalReview(prev => prev ? { ...prev, status: "Replied", reply: replyContent } : null);
     showSuccess("Reply published successfully!");
     console.log("Publishing reply:", replyContent);
     setIsSaving(false);
@@ -99,28 +134,28 @@ const ReviewDetailsPage = () => {
       <Card className="bg-white dark:bg-gray-800 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Review from {review.customer} on {review.platform}</span>
+            <span>Review from {localReview.customer} on {localReview.platform}</span>
             <Badge
               variant={
-                review.sentiment === "Positive"
+                localReview.sentiment === "Positive"
                   ? "default"
-                  : review.sentiment === "Negative"
+                  : localReview.sentiment === "Negative"
                   ? "destructive"
                   : "secondary"
               }
             >
-              {review.sentiment}
+              {localReview.sentiment}
             </Badge>
           </CardTitle>
           <CardDescription className="flex items-center justify-between">
-            <span>Rating: {review.rating} ⭐</span>
-            <span>Date: {review.date}</span>
+            <span>Rating: {localReview.rating} ⭐</span>
+            <span>Date: {localReview.date}</span>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold text-lg mb-1">Customer Comment:</h3>
-            <p className="text-gray-700 dark:text-gray-200">{review.comment}</p>
+            <p className="text-gray-700 dark:text-gray-200">{localReview.comment}</p>
           </div>
 
           <div>
@@ -148,7 +183,7 @@ const ReviewDetailsPage = () => {
               )}
             </Button>
             <Button variant="outline" onClick={handleSaveDraft} disabled={isSaving || isGenerating}>
-              {isSaving && !isGenerating ? ( // Only show saving for save/publish, not during generation
+              {isSaving && !isGenerating ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...
@@ -168,6 +203,35 @@ const ReviewDetailsPage = () => {
               )}
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Audit Log Section */}
+      <Card className="bg-white dark:bg-gray-800 shadow-lg">
+        <CardHeader>
+          <CardTitle>Review History</CardTitle>
+          <CardDescription>A timeline of actions taken on this review.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {localReview.history.length > 0 ? (
+            <ol className="relative border-l border-gray-200 dark:border-gray-700 ml-4">
+              {localReview.history
+                .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+                .map((entry, index) => (
+                  <li key={index} className="mb-4 ml-6">
+                    <span className="absolute flex items-center justify-center w-3 h-3 bg-blue-200 rounded-full -left-1.5 ring-4 ring-white dark:ring-gray-900 dark:bg-blue-900"></span>
+                    <p className="flex items-center mb-1 text-sm font-semibold text-gray-900 dark:text-white">
+                      {entry.action}
+                      <time className="block ml-2 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">
+                        {new Date(entry.timestamp).toLocaleString()}
+                      </time>
+                    </p>
+                  </li>
+                ))}
+            </ol>
+          ) : (
+            <p className="text-sm text-muted-foreground">No history available for this review.</p>
+          )}
         </CardContent>
       </Card>
     </div>

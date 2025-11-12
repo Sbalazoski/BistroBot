@@ -9,6 +9,11 @@ export const mockReviews = [
     status: "Replied",
     date: "2023-10-26",
     reply: "Dear Alice, thank you for your wonderful feedback! We're thrilled you enjoyed our pasta and the ambiance. We look forward to welcoming you back soon!",
+    history: [
+      { timestamp: "2023-10-26T10:00:00Z", action: "Review ingested" },
+      { timestamp: "2023-10-26T10:05:00Z", action: "AI drafted reply" },
+      { timestamp: "2023-10-26T10:30:00Z", action: "User published reply" },
+    ],
   },
   {
     id: "2",
@@ -20,6 +25,9 @@ export const mockReviews = [
     status: "Pending Reply",
     date: "2023-10-25",
     reply: null,
+    history: [
+      { timestamp: "2023-10-25T11:00:00Z", action: "Review ingested" },
+    ],
   },
   {
     id: "3",
@@ -31,6 +39,11 @@ export const mockReviews = [
     status: "Drafted",
     date: "2023-10-24",
     reply: "Hi Charlie, thanks for your feedback! We're glad you enjoyed the atmosphere and found the food decent. We're always striving to improve and hope to impress you even more on your next visit.",
+    history: [
+      { timestamp: "2023-10-24T09:00:00Z", action: "Review ingested" },
+      { timestamp: "2023-10-24T09:10:00Z", action: "AI drafted reply" },
+      { timestamp: "2023-10-24T09:45:00Z", action: "User edited draft" },
+    ],
   },
   {
     id: "4",
@@ -42,6 +55,9 @@ export const mockReviews = [
     status: "Pending Reply",
     date: "2023-10-23",
     reply: null,
+    history: [
+      { timestamp: "2023-10-23T14:00:00Z", action: "Review ingested" },
+    ],
   },
   {
     id: "5",
@@ -53,6 +69,9 @@ export const mockReviews = [
     status: "Pending Reply",
     date: "2023-10-22",
     reply: null,
+    history: [
+      { timestamp: "2023-10-22T16:00:00Z", action: "Review ingested" },
+    ],
   },
   {
     id: "6",
@@ -64,6 +83,9 @@ export const mockReviews = [
     status: "Pending Reply",
     date: "2023-10-21",
     reply: null,
+    history: [
+      { timestamp: "2023-10-21T08:00:00Z", action: "Review ingested" },
+    ],
   },
   {
     id: "7",
@@ -75,5 +97,10 @@ export const mockReviews = [
     status: "Replied",
     date: "2023-10-20",
     reply: "Dear Grace, thank you for your fantastic review! We're delighted you had such a great experience with us. We hope to see you again soon!",
+    history: [
+      { timestamp: "2023-10-20T12:00:00Z", action: "Review ingested" },
+      { timestamp: "2023-10-20T12:15:00Z", action: "AI drafted reply" },
+      { timestamp: "2023-10-20T12:40:00Z", action: "User published reply" },
+    ],
   },
 ];
