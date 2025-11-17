@@ -19,13 +19,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button"; // Import Button
-import { XCircle } from "lucide-react"; // Import XCircle icon
 import { mockReviews } from "@/data/mockReviews";
 
 const ReviewsPage = () => {
   const [sentimentFilter, setSentimentFilter] = useState<string>("All");
-  const [platformFilter, setPlatformFilter] = useState<string>("All");
+  const [platformFilter, setPlatformFilter] = useState<string>("All"); // New state for platform filter
   const [sortOrder, setSortOrder] = useState<string>("Newest");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -48,7 +46,7 @@ const ReviewsPage = () => {
     }
 
     // Filter by platform
-    if (platformFilter !== "All") {
+    if (platformFilter !== "All") { // Apply platform filter
       reviews = reviews.filter((review) => review.platform === platformFilter);
     }
 
@@ -60,7 +58,7 @@ const ReviewsPage = () => {
     });
 
     return reviews;
-  }, [sentimentFilter, platformFilter, sortOrder, searchQuery]);
+  }, [sentimentFilter, platformFilter, sortOrder, searchQuery]); // Add platformFilter to dependencies
 
   // Get unique platforms from mock reviews for the filter dropdown
   const uniquePlatforms = useMemo(() => {
@@ -69,29 +67,20 @@ const ReviewsPage = () => {
     return Array.from(platforms);
   }, []);
 
-  const handleClearFilters = () => {
-    setSearchQuery("");
-    setSentimentFilter("All");
-    setPlatformFilter("All");
-    setSortOrder("Newest");
-  };
-
-  const isFilterActive = searchQuery !== "" || sentimentFilter !== "All" || platformFilter !== "All" || sortOrder !== "Newest";
-
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Review Management</h2>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-4 items-center flex-wrap">
+      <div className="flex flex-col sm:flex-row gap-4 mb-4 items-center flex-wrap"> {/* Added flex-wrap for better responsiveness */}
         <Input
           placeholder="Search by customer or comment..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full sm:max-w-[300px]"
+          className="w-full sm:w-[300px]"
         />
 
         <div className="flex items-center gap-2">
-          <label htmlFor="platform-filter" className="text-sm font-medium whitespace-nowrap">Filter by Platform:</label>
+          <label htmlFor="platform-filter" className="text-sm font-medium">Filter by Platform:</label>
           <Select value={platformFilter} onValueChange={setPlatformFilter}>
             <SelectTrigger id="platform-filter" className="w-[180px]">
               <SelectValue placeholder="Select platform" />
@@ -106,7 +95,7 @@ const ReviewsPage = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="sentiment-filter" className="text-sm font-medium whitespace-nowrap">Filter by Sentiment:</label>
+          <label htmlFor="sentiment-filter" className="text-sm font-medium">Filter by Sentiment:</label>
           <Select value={sentimentFilter} onValueChange={setSentimentFilter}>
             <SelectTrigger id="sentiment-filter" className="w-[180px]">
               <SelectValue placeholder="Select sentiment" />
@@ -121,7 +110,7 @@ const ReviewsPage = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="sort-order" className="text-sm font-medium whitespace-nowrap">Sort by Date:</label>
+          <label htmlFor="sort-order" className="text-sm font-medium">Sort by Date:</label>
           <Select value={sortOrder} onValueChange={setSortOrder}>
             <SelectTrigger id="sort-order" className="w-[180px]">
               <SelectValue placeholder="Sort order" />
@@ -132,12 +121,6 @@ const ReviewsPage = () => {
             </SelectContent>
           </Select>
         </div>
-
-        {isFilterActive && (
-          <Button variant="outline" onClick={handleClearFilters} className="flex items-center gap-2">
-            <XCircle className="h-4 w-4" /> Clear Filters
-          </Button>
-        )}
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">

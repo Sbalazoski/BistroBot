@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react"; // Removed useEffect as it's no longer needed for theme or mock data init
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -6,46 +6,34 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
-import { useTheme } from "next-themes";
-import { useUserProfile } from "@/hooks/use-user-profile"; // Import the new hook
-import { Loader2 } from "lucide-react"; // Import Loader2 for loading state
+import { useTheme } from "next-themes"; // Import useTheme
 
 const SettingsPage = () => {
-  const { theme, setTheme } = useTheme();
-  const { userProfile, isLoading, isUpdating, updateProfile } = useUserProfile();
-
-  const [restaurantName, setRestaurantName] = useState("");
+  const { theme, setTheme } = useTheme(); // Get theme and setTheme from useTheme
+  const [restaurantName, setRestaurantName] = useState("BistroBot Restaurant");
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
-  
-  useEffect(() => {
-    if (userProfile) {
-      setRestaurantName(userProfile.restaurant_name || "");
-      setAutoReplyEnabled(userProfile.auto_reply_enabled);
-    }
-  }, [userProfile]);
+  const [loading, setLoading] = useState(false); // Set initial loading to false as we're not fetching real data
 
-  const isAutoReplyAvailable = userProfile?.subscription_tier === "high";
+  // No useEffect needed here for initial theme or mock data loading,
+  // as `next-themes` manages the theme and initial state is set above.
 
   const handleSaveSettings = async () => {
-    if (!userProfile) {
-      showError("User profile not loaded. Please try again.");
-      return;
+    setLoading(true);
+    // In a real app, this would update the settings in your Supabase database
+    // For now, we'll simulate a save operation.
+    console.log("Mock Saving settings:", { restaurantName, theme, autoReplyEnabled });
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      showSuccess("Settings saved successfully! (Mock save)");
+    } else {
+      showError("You must be logged in to save settings.");
     }
-
-    updateProfile({
-      restaurant_name: restaurantName,
-      auto_reply_enabled: autoReplyEnabled,
-    });
+    setLoading(false);
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col min-h-[calc(100vh-128px)] items-center justify-center space-y-6">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-lg text-muted-foreground">Loading settings...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
@@ -80,16 +68,10 @@ const SettingsPage = () => {
               <Label htmlFor="auto-reply">Enable AI Auto-Replies</Label>
               <Switch
                 id="auto-reply"
-                checked={autoReplyEnabled && isAutoReplyAvailable} // Only checked if available and user enabled
+                checked={autoReplyEnabled}
                 onCheckedChange={setAutoReplyEnabled}
-                disabled={!isAutoReplyAvailable || isUpdating} // Disable if not on high tier or updating
               />
             </div>
-            {!isAutoReplyAvailable && (
-              <p className="text-sm text-red-500 dark:text-red-400">
-                AI Auto-Replies are only available on the high-tier subscription plan. Upgrade to enable this feature.
-              </p>
-            )}
             <p className="text-sm text-muted-foreground">
               When enabled, BistroBot will automatically draft and publish replies based on review sentiment. Human review is still recommended.
             </p>
@@ -106,24 +88,16 @@ const SettingsPage = () => {
               <Label htmlFor="dark-mode">Enable Dark Mode</Label>
               <Switch
                 id="dark-mode"
-                checked={theme === "dark"}
-                onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-                disabled={isUpdating}
+                checked={theme === "dark"} // Check if current theme is dark
+                onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} // Set theme based on switch
               />
             </div>
           </CardContent>
         </Card>
 
         <div className="flex justify-end">
-          <Button onClick={handleSaveSettings} disabled={isUpdating}>
-            {isUpdating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save Settings"
-            )}
+          <Button onClick={handleSaveSettings} disabled={loading}>
+            {loading ? "Saving..." : "Save Settings"}
           </Button>
         </div>
       </div>

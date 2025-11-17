@@ -1,25 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ReviewSummaryCard from "@/components/ReviewSummaryCard";
 import SentimentTrendChart from "@/components/SentimentTrendChart";
-import RecentReviewsList from "@/components/RecentReviewsList";
-import DashboardSkeleton from "@/components/DashboardSkeleton"; // Import the new skeleton component
+import RecentReviewsList from "@/components/RecentReviewsList"; // Import the new component
 
 const Dashboard = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate data loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500); // Simulate 1.5 seconds loading time
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return <DashboardSkeleton />;
-  }
-
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Dashboard Overview</h2>
@@ -28,7 +12,16 @@ const Dashboard = () => {
 
       <SentimentTrendChart />
 
-      <RecentReviewsList />
+      <RecentReviewsList /> {/* Add the new RecentReviewsList component here */}
+
+      <div className="flex-grow p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+        <p className="text-lg text-gray-600 dark:text-gray-300">
+          Welcome to your BistroBot dashboard! This is where you'll see an overview of your review activity, sentiment trends, and reply statuses.
+        </p>
+        <p className="text-md text-gray-500 dark:text-gray-400 mt-2">
+          More features will be added here soon.
+        </p>
+      </div>
     </div>
   );
 };

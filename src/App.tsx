@@ -12,10 +12,8 @@ import SettingsPage from "./pages/SettingsPage";
 import ReviewDetailsPage from "./pages/ReviewDetailsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import ReplyTemplatesPage from "./pages/ReplyTemplatesPage";
-import BenchmarkingPage from "./pages/BenchmarkingPage"; // Import BenchmarkingPage
 import { supabase } from "@/lib/supabase";
-import { ThemeProvider } from "next-themes";
-import { Loader2 } from "lucide-react"; // Import Loader2
+import { ThemeProvider } from "next-themes"; // Import ThemeProvider
 
 const queryClient = new QueryClient();
 
@@ -41,12 +39,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
-        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-        <p className="text-lg">Loading application...</p>
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Or a spinner
   }
 
   return session ? children : <Navigate to="/" />; // Redirect to the root path (Index page with Auth)
@@ -54,12 +47,12 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system" attribute="class">
+    <ThemeProvider defaultTheme="system" attribute="class"> {/* Wrap with ThemeProvider */}
       <TooltipProvider>
-        <Toaster />
+        <Toaster /> {/* Only Sonner is used for toasts */}
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Index />} /> {/* Index page now includes AuthPage */}
             {/* Protected routes using the Layout component */}
             <Route
               path="/dashboard"
@@ -76,7 +69,6 @@ const App = () => (
               <Route path="settings" element={<SettingsPage />} />
               <Route path="integrations" element={<IntegrationsPage />} />
               <Route path="templates" element={<ReplyTemplatesPage />} />
-              <Route path="benchmarking" element={<BenchmarkingPage />} /> {/* New Benchmarking Route */}
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
