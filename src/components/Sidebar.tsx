@@ -1,6 +1,8 @@
+"use client";
+
 import React from "react";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, MessageSquareText, Settings, PlugZap, FileText } from "lucide-react"; // Import FileText icon
+import { LayoutDashboard, MessageSquareText, Settings, PlugZap, FileText, CreditCard } from "lucide-react"; // Import CreditCard icon
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -21,14 +23,19 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onLinkClick }) => {
       icon: MessageSquareText,
     },
     {
-      name: "Reply Templates", // New navigation item
+      name: "Reply Templates",
       href: "/dashboard/templates",
-      icon: FileText, // Using FileText icon for templates
+      icon: FileText,
     },
     {
       name: "Integrations",
       href: "/dashboard/integrations",
       icon: PlugZap,
+    },
+    {
+      name: "Billing", // New navigation item
+      href: "/dashboard/billing",
+      icon: CreditCard, // Using CreditCard icon for billing
     },
     {
       name: "Settings",

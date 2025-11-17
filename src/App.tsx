@@ -12,8 +12,9 @@ import SettingsPage from "./pages/SettingsPage";
 import ReviewDetailsPage from "./pages/ReviewDetailsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import ReplyTemplatesPage from "./pages/ReplyTemplatesPage";
+import BillingPage from "./pages/BillingPage"; // Import BillingPage
 import { supabase } from "@/lib/supabase";
-import { ThemeProvider } from "next-themes"; // Import ThemeProvider
+import { ThemeProvider } from "next-themes";
 
 const queryClient = new QueryClient();
 
@@ -47,12 +48,12 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system" attribute="class"> {/* Wrap with ThemeProvider */}
+    <ThemeProvider defaultTheme="system" attribute="class">
       <TooltipProvider>
-        <Toaster /> {/* Only Sonner is used for toasts */}
+        <Toaster />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} /> {/* Index page now includes AuthPage */}
+            <Route path="/" element={<Index />} />
             {/* Protected routes using the Layout component */}
             <Route
               path="/dashboard"
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="settings" element={<SettingsPage />} />
               <Route path="integrations" element={<IntegrationsPage />} />
               <Route path="templates" element={<ReplyTemplatesPage />} />
+              <Route path="billing" element={<BillingPage />} /> {/* New Billing Route */}
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

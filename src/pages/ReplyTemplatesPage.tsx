@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { PlusCircle, Edit, Trash2 } from "lucide-react";
+import { PlusCircle, Edit, Trash2, Info } from "lucide-react"; // Import Info icon
 import { showSuccess, showError } from "@/utils/toast";
 import {
   Select,
@@ -13,8 +15,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // Import Select components
-import { Badge } from "@/components/ui/badge"; // Import Badge component
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { useSubscription } from "@/hooks/use-subscription"; // Import the subscription hook
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Import Alert components
 
 interface ReplyTemplate {
   id: string;
@@ -52,6 +56,9 @@ const ReplyTemplatesPage = () => {
   const [templateContent, setTemplateContent] = useState("");
   const [templateSentiment, setTemplateSentiment] = useState<ReplyTemplate['sentiment']>("All");
 
+  const { subscription, isFree } = useSubscription(); // Use the subscription hook
+  const canAddMoreTemplates = templates.length < subscription.features.maxTemplates;
+
   const resetForm = () => {
     setCurrentTemplate(null);
     setTemplateName("");
@@ -75,6 +82,11 @@ const ReplyTemplatesPage = () => {
       showSuccess("Template updated successfully!");
     } else {
       // Add new template
+      if (!canAddMoreTemplates) {
+        showError(`You have reached the limit of ${subscription.features.maxTemplates} templates for your ${subscription.planName}. Please upgrade to add more.`);
+        setIsDialogOpen(false);
+        return;
+      }
       const newTemplate: ReplyTemplate = {
         id: String(Date.now()), // Simple unique ID
         name: templateName,
@@ -104,6 +116,10 @@ const ReplyTemplatesPage = () => {
   };
 
   const openAddDialog = () => {
+    if (!canAddMoreTemplates && !currentTemplate) { // Only block if trying to add new and at limit
+      showError(`You have reached the limit of ${subscription.features.maxTemplates} templates for your ${subscription.planName}. Please upgrade to add more.`);
+      return;
+    }
     resetForm();
     setIsDialogOpen(true);
   };
@@ -111,14 +127,14 @@ const ReplyTemplatesPage = () => {
   const getSentimentBadgeVariant = (sentiment: ReplyTemplate['sentiment']) => {
     switch (sentiment) {
       case "Positive":
-        return "default"; // Greenish
+        return "default";
       case "Negative":
-        return "destructive"; // Red
+        return "destructive";
       case "Neutral":
-        return "secondary"; // Gray
+        return "secondary";
       case "All":
       default:
-        return "outline"; // Default/outline for 'All'
+        return "outline";
     }
   };
 
@@ -128,7 +144,7 @@ const ReplyTemplatesPage = () => {
         <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Reply Templates</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={openAddDialog}>
+            <Button onClick={openAddDialog} disabled={isFree && !canAddMoreTemplates && !currentTemplate}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add New Template
             </Button>
           </DialogTrigger>
@@ -191,6 +207,16 @@ const ReplyTemplatesPage = () => {
       <p className="text-lg text-gray-600 dark:text-gray-300">
         Define and manage custom reply templates to guide BistroBot's AI in generating responses.
       </p>
+
+      {isFree && !canAddMoreTemplates && (
+        <Alert variant="default">
+          <Info className="h-4 w-4" />
+          <AlertTitle>Template Limit Reached!</AlertTitle>
+          <AlertDescription>
+            You are on the {subscription.planName} and can only have {subscription.features.maxTemplates} templates. Upgrade to a Pro plan to create more!
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {templates.length > 0 ? (
