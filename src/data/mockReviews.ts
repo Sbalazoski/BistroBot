@@ -14,6 +14,7 @@ export const mockReviews = [
       { timestamp: "2023-10-26T10:05:00Z", action: "AI drafted reply" },
       { timestamp: "2023-10-26T10:30:00Z", action: "User published reply" },
     ],
+    scheduledAt: null,
   },
   {
     id: "2",
@@ -28,6 +29,7 @@ export const mockReviews = [
     history: [
       { timestamp: "2023-10-25T11:00:00Z", action: "Review ingested" },
     ],
+    scheduledAt: null,
   },
   {
     id: "3",
@@ -44,6 +46,7 @@ export const mockReviews = [
       { timestamp: "2023-10-24T09:10:00Z", action: "AI drafted reply" },
       { timestamp: "2023-10-24T09:45:00Z", action: "User edited draft" },
     ],
+    scheduledAt: null,
   },
   {
     id: "4",
@@ -52,12 +55,15 @@ export const mockReviews = [
     rating: 5,
     comment: "Best burger in town! Will definitely be back soon. The patty was juicy, the bun was fresh, and the toppings were perfect. A must-try!",
     sentiment: "Positive",
-    status: "Pending Reply",
+    status: "Scheduled", // Changed status to Scheduled
     date: "2023-10-23",
-    reply: null,
+    reply: "Dear Diana, we're thrilled you loved our burger! We can't wait to welcome you back for another fantastic meal soon.",
     history: [
       { timestamp: "2023-10-23T14:00:00Z", action: "Review ingested" },
+      { timestamp: "2023-10-23T14:10:00Z", action: "AI drafted reply" },
+      { timestamp: "2023-10-23T14:30:00Z", action: "Reply scheduled for 2023-10-27T10:00:00Z" }, // Added scheduled history
     ],
+    scheduledAt: "2024-12-01T10:00:00Z", // Example future date
   },
   {
     id: "5",
@@ -72,6 +78,7 @@ export const mockReviews = [
     history: [
       { timestamp: "2023-10-22T16:00:00Z", action: "Review ingested" },
     ],
+    scheduledAt: null,
   },
   {
     id: "6",
@@ -86,6 +93,7 @@ export const mockReviews = [
     history: [
       { timestamp: "2023-10-21T08:00:00Z", action: "Review ingested" },
     ],
+    scheduledAt: null,
   },
   {
     id: "7",
@@ -102,5 +110,6 @@ export const mockReviews = [
       { timestamp: "2023-10-20T12:15:00Z", action: "AI drafted reply" },
       { timestamp: "2023-10-20T12:40:00Z", action: "User published reply" },
     ],
+    scheduledAt: null,
   },
 ];
