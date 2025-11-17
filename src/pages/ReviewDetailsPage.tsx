@@ -119,6 +119,10 @@ const ReviewDetailsPage = () => {
   };
 
   const handleSaveDraft = async () => {
+    if (!replyContent.trim()) {
+      showError("Reply content cannot be empty to save as draft.");
+      return;
+    }
     setIsSaving(true);
     await new Promise(resolve => setTimeout(resolve, 1000));
     
