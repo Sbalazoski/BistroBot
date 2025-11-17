@@ -3,10 +3,9 @@
 import React from 'react';
 
 // SVG content for the repeating pattern
-// Using 'Comic Sans MS' as a fun font, with a fallback to cursive and sans-serif.
-// The text is dark blue (#1e3a8a) and slightly rotated.
-const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100">
-  <text x="10" y="70" font-family="'Comic Sans MS', cursive, sans-serif" font-size="30" fill="#1e3a8a" transform="rotate(-15 10 70)">BistroBot</text>
+// Using a modern sans-serif font stack, larger text, and adjusted rotation/position for a tighter pattern.
+const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="90">
+  <text x="5" y="65" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, &quot;Noto Sans&quot;, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;" font-size="45" fill="currentColor" transform="rotate(-10 5 65)">BistroBot</text>
 </svg>`;
 
 // Encode the SVG content for use in a data URI
@@ -20,11 +19,11 @@ const dataUri = `url("data:image/svg+xml;charset=utf-8,${encodedSvg}")`;
 const BistroBotPatternOverlay = () => {
   return (
     <div
-      className="absolute inset-0 z-10 pointer-events-none opacity-5 dark:opacity-10" // Subtle opacity, slightly more visible in dark mode
+      className="absolute inset-0 z-10 pointer-events-none opacity-10 dark:opacity-15 text-primary dark:text-primary-foreground" // Increased opacity, using primary colors for better visibility
       style={{
         backgroundImage: dataUri,
         backgroundRepeat: 'repeat',
-        backgroundSize: '200px 100px', // Matches SVG dimensions for repeating
+        backgroundSize: '150px 75px', // Smaller background size to make text overlap and appear almost touching
       }}
     />
   );
