@@ -4,9 +4,15 @@ import { Star, MessageSquareText, TrendingUp, Clock, ThumbsDown } from "lucide-r
 import { mockReviews } from "@/data/mockReviews"; // Import mockReviews to calculate new metrics
 
 const ReviewSummaryCard = () => {
-  // Mock data for demonstration
+  // Calculate total reviews
   const totalReviews = mockReviews.length;
-  const averageRating = (mockReviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1);
+
+  // Calculate average rating
+  const averageRating = totalReviews > 0 
+    ? (mockReviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1)
+    : "0.0";
+
+  // Calculate new reviews today
   const newReviewsToday = mockReviews.filter(review => {
     const reviewDate = new Date(review.date);
     const today = new Date();
@@ -16,11 +22,11 @@ const ReviewSummaryCard = () => {
   // Calculate Pending Replies
   const pendingReplies = mockReviews.filter(review => review.status === "Pending Reply").length;
 
-  // Calculate Negative Reviews This Week (mock logic for demonstration)
+  // Calculate Negative Reviews This Week
   const negativeReviewsThisWeek = mockReviews.filter(review => {
     const reviewDate = new Date(review.date);
     const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); // Set to 7 days ago
     return review.sentiment === "Negative" && reviewDate >= oneWeekAgo;
   }).length;
 
