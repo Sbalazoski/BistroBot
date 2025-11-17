@@ -50,7 +50,7 @@ const ReviewSummaryCard = () => {
         <CardContent>
           <div className="text-2xl font-bold">{totalReviews}</div>
           <p className="text-xs text-muted-foreground">
-            +20% from last month (mock)
+            +20% from last month
           </p>
         </CardContent>
       </Card>

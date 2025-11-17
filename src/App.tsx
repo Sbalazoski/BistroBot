@@ -15,6 +15,7 @@ import ReplyTemplatesPage from "./pages/ReplyTemplatesPage";
 import BenchmarkingPage from "./pages/BenchmarkingPage"; // Import BenchmarkingPage
 import { supabase } from "@/lib/supabase";
 import { ThemeProvider } from "next-themes";
+import { Loader2 } from "lucide-react"; // Import Loader2
 
 const queryClient = new QueryClient();
 
@@ -40,7 +41,12 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   }, []);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Or a spinner
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
+        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+        <p className="text-lg">Loading application...</p>
+      </div>
+    );
   }
 
   return session ? children : <Navigate to="/" />; // Redirect to the root path (Index page with Auth)
