@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { PlusCircle, Edit, Trash2 } from "lucide-react";
+import { PlusCircle, Edit, Trash2, Loader2 } from "lucide-react"; // Import Loader2
 import { showSuccess, showError } from "@/utils/toast";
 import {
   Select,
@@ -51,19 +51,24 @@ const ReplyTemplatesPage = () => {
   const [templateName, setTemplateName] = useState("");
   const [templateContent, setTemplateContent] = useState("");
   const [templateSentiment, setTemplateSentiment] = useState<ReplyTemplate['sentiment']>("All");
+  const [isSaving, setIsSaving] = useState(false); // New state for loading
 
   const resetForm = () => {
     setCurrentTemplate(null);
     setTemplateName("");
     setTemplateContent("");
     setTemplateSentiment("All");
+    setIsSaving(false); // Reset loading state
   };
 
-  const handleAddEditTemplate = () => {
+  const handleAddEditTemplate = async () => { // Made async
     if (!templateName.trim() || !templateContent.trim()) {
       showError("Template name and content cannot be empty.");
       return;
     }
+
+    setIsSaving(true); // Start loading
+    await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API call
 
     if (currentTemplate) {
       // Edit existing template
@@ -180,8 +185,15 @@ const ReplyTemplatesPage = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" onClick={handleAddEditTemplate}>
-                {currentTemplate ? "Save Changes" : "Add Template"}
+              <Button type="submit" onClick={handleAddEditTemplate} disabled={isSaving}>
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {currentTemplate ? "Saving..." : "Adding..."}
+                  </>
+                ) : (
+                  currentTemplate ? "Save Changes" : "Add Template"
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
