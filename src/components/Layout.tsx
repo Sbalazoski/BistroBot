@@ -40,12 +40,15 @@ const Layout = () => {
     <div className="flex min-h-screen bg-background">
       {/* Desktop Sidebar */}
       {!isMobile && (
-        <aside className="w-64 border-r bg-sidebar-background text-sidebar-foreground">
-          <div className="flex items-center justify-center h-16 border-b">
+        <aside className="w-64 border-r bg-sidebar-background text-sidebar-foreground flex flex-col">
+          <div className="flex items-center justify-center h-20 border-b"> {/* Increased height */}
             <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-16 w-16 mr-2" /> {/* Increased to h-16 w-16 */}
-            <h1 className="text-xl font-bold text-sidebar-primary">BistroBot</h1>
+            <h1 className="text-2xl font-bold text-sidebar-primary">BistroBot</h1> {/* Increased font size */}
           </div>
-          <Sidebar onLinkClick={handleLinkClick} />
+          <div className="flex-grow">
+            <Sidebar onLinkClick={handleLinkClick} />
+          </div>
+          <MadeWithDyad /> {/* Moved MadeWithDyad here */}
         </aside>
       )}
 
@@ -61,11 +64,14 @@ const Layout = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col w-64 p-0">
-                <div className="flex items-center justify-center h-16 border-b">
+                <div className="flex items-center justify-center h-20 border-b"> {/* Increased height */}
                   <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-16 w-16 mr-2" /> {/* Increased to h-16 w-16 */}
-                  <h1 className="text-xl font-bold text-primary">BistroBot</h1>
+                  <h1 className="text-2xl font-bold text-primary">BistroBot</h1> {/* Increased font size */}
                 </div>
-                <Sidebar onLinkClick={handleLinkClick} />
+                <div className="flex-grow">
+                  <Sidebar onLinkClick={handleLinkClick} />
+                </div>
+                <MadeWithDyad /> {/* Moved MadeWithDyad here */}
               </SheetContent>
             </Sheet>
           )}
@@ -88,7 +94,6 @@ const Layout = () => {
         {/* Main Content */}
         <main className="flex-1 p-6 overflow-auto">
           <Outlet />
-          <MadeWithDyad /> {/* Add MadeWithDyad here */}
         </main>
       </div>
     </div>
