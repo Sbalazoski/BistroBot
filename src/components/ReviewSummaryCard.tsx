@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, MessageSquareText, TrendingUp, Clock, ThumbsDown, Smile, Meh, Frown } from "lucide-react"; // Import new icons for sentiment
+import { Star, MessageSquareText, TrendingUp, Clock, ThumbsDown, Smile, Meh, Frown, Gauge } from "lucide-react"; // Replaced Speedometer with Gauge
 import { mockReviews } from "@/data/mockReviews"; // Import mockReviews to calculate new metrics
 
 const ReviewSummaryCard = () => {

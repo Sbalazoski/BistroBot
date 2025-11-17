@@ -12,7 +12,7 @@ import {
   Legend,
   Bar,
 } from "recharts";
-import { Gauge, Speedometer, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Gauge, TrendingUp, CheckCircle2 } from "lucide-react"; // Removed Speedometer, kept Gauge
 
 const mockBenchmarkingData = [
   { name: "Jan", "Reply Speed (s)": 5, "Accuracy (%)": 85 },
@@ -35,7 +35,7 @@ const BenchmarkingPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg. Reply Speed</CardTitle>
-            <Speedometer className="h-4 w-4 text-muted-foreground" />
+            <Gauge className="h-4 w-4 text-muted-foreground" /> {/* Changed to Gauge */}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">2.5s</div>
