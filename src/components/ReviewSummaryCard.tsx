@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, MessageSquareText, TrendingUp, Clock, ThumbsDown } from "lucide-react"; // Import Clock and ThumbsDown icons
+import { Star, MessageSquareText, TrendingUp, Clock, ThumbsDown, Smile, Meh, Frown } from "lucide-react"; // Import new icons for sentiment
 import { mockReviews } from "@/data/mockReviews"; // Import mockReviews to calculate new metrics
 
 const ReviewSummaryCard = () => {
@@ -29,6 +29,15 @@ const ReviewSummaryCard = () => {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); // Set to 7 days ago
     return review.sentiment === "Negative" && reviewDate >= oneWeekAgo;
   }).length;
+
+  // Calculate total positive reviews
+  const totalPositiveReviews = mockReviews.filter(review => review.sentiment === "Positive").length;
+
+  // Calculate total negative reviews
+  const totalNegativeReviews = mockReviews.filter(review => review.sentiment === "Negative").length;
+
+  // Calculate total neutral reviews
+  const totalNeutralReviews = mockReviews.filter(review => review.sentiment === "Neutral").length;
 
 
   return (
@@ -90,6 +99,43 @@ const ReviewSummaryCard = () => {
           <div className="text-2xl font-bold">{negativeReviewsThisWeek}</div>
           <p className="text-xs text-muted-foreground">
             In the last 7 days
+          </p>
+        </CardContent>
+      </Card>
+      {/* New Sentiment Summary Cards */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Positive Reviews</CardTitle>
+          <Smile className="h-4 w-4 text-green-600 dark:text-green-400" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{totalPositiveReviews}</div>
+          <p className="text-xs text-muted-foreground">
+            Total positive feedback
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Neutral Reviews</CardTitle>
+          <Meh className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{totalNeutralReviews}</div>
+          <p className="text-xs text-muted-foreground">
+            Total neutral feedback
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Negative Reviews</CardTitle>
+          <Frown className="h-4 w-4 text-red-600 dark:text-red-400" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{totalNegativeReviews}</div>
+          <p className="text-xs text-muted-foreground">
+            Total negative feedback
           </p>
         </CardContent>
       </Card>
