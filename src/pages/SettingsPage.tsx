@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Removed useEffect as it's no longer needed for theme or mock data init
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -6,24 +6,22 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
-import { useTheme } from "next-themes"; // Import useTheme
+import { useTheme } from "next-themes";
 
 const SettingsPage = () => {
-  const { theme, setTheme } = useTheme(); // Get theme and setTheme from useTheme
+  const { theme, setTheme } = useTheme();
   const [restaurantName, setRestaurantName] = useState("BistroBot Restaurant");
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
-  const [loading, setLoading] = useState(false); // Set initial loading to false as we're not fetching real data
-
-  // No useEffect needed here for initial theme or mock data loading,
-  // as `next-themes` manages the theme and initial state is set above.
+  const [loading, setLoading] = useState(false);
+  
+  // Mock subscription tier - change this to "high" to enable the switch
+  const [userSubscriptionTier, setUserSubscriptionTier] = useState<"free" | "basic" | "high">("basic"); 
+  const isAutoReplyAvailable = userSubscriptionTier === "high";
 
   const handleSaveSettings = async () => {
     setLoading(true);
-    // In a real app, this would update the settings in your Supabase database
-    // For now, we'll simulate a save operation.
     console.log("Mock Saving settings:", { restaurantName, theme, autoReplyEnabled });
     
-    // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -68,10 +66,16 @@ const SettingsPage = () => {
               <Label htmlFor="auto-reply">Enable AI Auto-Replies</Label>
               <Switch
                 id="auto-reply"
-                checked={autoReplyEnabled}
+                checked={autoReplyEnabled && isAutoReplyAvailable} // Only checked if available and user enabled
                 onCheckedChange={setAutoReplyEnabled}
+                disabled={!isAutoReplyAvailable} // Disable if not on high tier
               />
             </div>
+            {!isAutoReplyAvailable && (
+              <p className="text-sm text-red-500 dark:text-red-400">
+                AI Auto-Replies are only available on the high-tier subscription plan. Upgrade to enable this feature.
+              </p>
+            )}
             <p className="text-sm text-muted-foreground">
               When enabled, BistroBot will automatically draft and publish replies based on review sentiment. Human review is still recommended.
             </p>
@@ -88,8 +92,8 @@ const SettingsPage = () => {
               <Label htmlFor="dark-mode">Enable Dark Mode</Label>
               <Switch
                 id="dark-mode"
-                checked={theme === "dark"} // Check if current theme is dark
-                onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} // Set theme based on switch
+                checked={theme === "dark"}
+                onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
               />
             </div>
           </CardContent>

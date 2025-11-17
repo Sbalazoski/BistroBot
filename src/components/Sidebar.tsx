@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, MessageSquareText, Settings, PlugZap, FileText } from "lucide-react"; // Import FileText icon
+import { LayoutDashboard, MessageSquareText, Settings, PlugZap, FileText, BarChart2 } from "lucide-react"; // Import BarChart2 icon
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -21,14 +21,19 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onLinkClick }) => {
       icon: MessageSquareText,
     },
     {
-      name: "Reply Templates", // New navigation item
+      name: "Reply Templates",
       href: "/dashboard/templates",
-      icon: FileText, // Using FileText icon for templates
+      icon: FileText,
     },
     {
       name: "Integrations",
       href: "/dashboard/integrations",
       icon: PlugZap,
+    },
+    {
+      name: "Benchmarking", // New navigation item
+      href: "/dashboard/benchmarking",
+      icon: BarChart2, // Using BarChart2 icon for benchmarking
     },
     {
       name: "Settings",
