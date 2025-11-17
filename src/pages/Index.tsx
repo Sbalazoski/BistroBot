@@ -2,8 +2,8 @@
 
 import React from "react";
 import AuthPage from "./AuthPage";
-import MadeWithDyad from "@/components/MadeWithDyad";
-import BistroBotPatternOverlay from "@/components/BistroBotPatternOverlay"; // Import the new component
+import { MadeWithDyad } from "@/components/made-with-dyad"; // Corrected import path and named import
+import BistroBotPatternOverlay from "@/components/BistroBotPatternOverlay";
 
 const Index = () => {
   return (
