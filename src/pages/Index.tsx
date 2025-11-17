@@ -1,17 +1,10 @@
-"use client";
-
-import React from "react";
-import AuthPage from "./AuthPage";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import SlantedHyphensPattern from "@/components/SlantedHyphensPattern"; // Import the new pattern component
+import AuthPage from "./AuthPage"; // Import AuthPage
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 dark:from-indigo-900 dark:via-purple-900 dark:to-pink-900 relative overflow-hidden">
-      {/* Slanted Hyphens Pattern */}
-      <SlantedHyphensPattern />
-
-      <main className="flex-grow flex items-center justify-center p-4 relative z-20">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-300 via-rose-300 to-purple-300 dark:from-indigo-950 dark:via-purple-950 dark:to-pink-950">
+      <main className="flex-grow flex items-center justify-center p-4">
         <AuthPage /> {/* Render the AuthPage component directly */}
       </main>
       <MadeWithDyad />
