@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Sparkles, Loader2, MessageSquareText, Save, Send } from "lucide-react"; // Import new icons
 import { showSuccess, showError } from "@/utils/toast";
 import { mockReviews } from "@/data/mockReviews";
 
@@ -122,6 +122,22 @@ const ReviewDetailsPage = () => {
     setIsSaving(false);
   };
 
+  const getHistoryIcon = (action: string) => {
+    switch (action) {
+      case "Review ingested":
+        return <MessageSquareText className="h-3 w-3 text-blue-600 dark:text-blue-400" />;
+      case "AI drafted reply":
+        return <Sparkles className="h-3 w-3 text-purple-600 dark:text-purple-400" />;
+      case "User saved draft":
+      case "User edited draft":
+        return <Save className="h-3 w-3 text-yellow-600 dark:text-yellow-400" />;
+      case "User published reply":
+        return <Send className="h-3 w-3 text-green-600 dark:text-green-400" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
       <div className="flex items-center justify-between">
@@ -219,7 +235,9 @@ const ReviewDetailsPage = () => {
                 .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
                 .map((entry, index) => (
                   <li key={index} className="mb-4 ml-6">
-                    <span className="absolute flex items-center justify-center w-3 h-3 bg-blue-200 rounded-full -left-1.5 ring-4 ring-white dark:ring-gray-900 dark:bg-blue-900"></span>
+                    <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                      {getHistoryIcon(entry.action)}
+                    </span>
                     <p className="flex items-center mb-1 text-sm font-semibold text-gray-900 dark:text-white">
                       {entry.action}
                       <time className="block ml-2 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">
