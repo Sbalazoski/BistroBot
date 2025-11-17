@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -7,31 +7,45 @@ import { Button } from "@/components/ui/button";
 import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
 import { useTheme } from "next-themes";
+import { useUserProfile } from "@/hooks/use-user-profile"; // Import the new hook
+import { Loader2 } from "lucide-react"; // Import Loader2 for loading state
 
 const SettingsPage = () => {
   const { theme, setTheme } = useTheme();
-  const [restaurantName, setRestaurantName] = useState("BistroBot Restaurant");
+  const { userProfile, isLoading, isUpdating, updateProfile } = useUserProfile();
+
+  const [restaurantName, setRestaurantName] = useState("");
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
-  const [loading, setLoading] = useState(false);
   
-  // Mock subscription tier - change this to "high" to enable the switch
-  const [userSubscriptionTier, setUserSubscriptionTier] = useState<"free" | "basic" | "high">("basic"); 
-  const isAutoReplyAvailable = userSubscriptionTier === "high";
+  useEffect(() => {
+    if (userProfile) {
+      setRestaurantName(userProfile.restaurant_name || "");
+      setAutoReplyEnabled(userProfile.auto_reply_enabled);
+    }
+  }, [userProfile]);
+
+  const isAutoReplyAvailable = userProfile?.subscription_tier === "high";
 
   const handleSaveSettings = async () => {
-    setLoading(true);
-    console.log("Mock Saving settings:", { restaurantName, theme, autoReplyEnabled });
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      showSuccess("Settings saved successfully! (Mock save)");
-    } else {
-      showError("You must be logged in to save settings.");
+    if (!userProfile) {
+      showError("User profile not loaded. Please try again.");
+      return;
     }
-    setLoading(false);
+
+    updateProfile({
+      restaurant_name: restaurantName,
+      auto_reply_enabled: autoReplyEnabled,
+    });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-[calc(100vh-128px)] items-center justify-center space-y-6">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-lg text-muted-foreground">Loading settings...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
@@ -68,7 +82,7 @@ const SettingsPage = () => {
                 id="auto-reply"
                 checked={autoReplyEnabled && isAutoReplyAvailable} // Only checked if available and user enabled
                 onCheckedChange={setAutoReplyEnabled}
-                disabled={!isAutoReplyAvailable} // Disable if not on high tier
+                disabled={!isAutoReplyAvailable || isUpdating} // Disable if not on high tier or updating
               />
             </div>
             {!isAutoReplyAvailable && (
@@ -94,14 +108,22 @@ const SettingsPage = () => {
                 id="dark-mode"
                 checked={theme === "dark"}
                 onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                disabled={isUpdating}
               />
             </div>
           </CardContent>
         </Card>
 
         <div className="flex justify-end">
-          <Button onClick={handleSaveSettings} disabled={loading}>
-            {loading ? "Saving..." : "Save Settings"}
+          <Button onClick={handleSaveSettings} disabled={isUpdating}>
+            {isUpdating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              "Save Settings"
+            )}
           </Button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Menu, LogOut, Sun, Moon } from "lucide-react"; // Import Sun and Moon icons
+import { Menu, LogOut, Sun, Moon, Loader2 } from "lucide-react"; // Import Sun and Moon icons, and Loader2
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -9,12 +9,14 @@ import { supabase } from "@/lib/supabase"; // Import supabase client
 import { showSuccess, showError } from "@/utils/toast";
 import { MadeWithDyad } from "@/components/made-with-dyad"; // Import MadeWithDyad
 import { useTheme } from "next-themes"; // Import useTheme
+import { useUserProfile } from "@/hooks/use-user-profile"; // Import the new hook
 
 const Layout = () => {
   const isMobile = useIsMobile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme(); // Get theme and setTheme from useTheme
+  const { userProfile, isLoading: isProfileLoading } = useUserProfile(); // Use the user profile hook
 
   const handleLinkClick = () => {
     if (isMobile) {
@@ -36,6 +38,17 @@ const Layout = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  const restaurantName = userProfile?.restaurant_name || "BistroBot";
+
+  if (isProfileLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-lg text-muted-foreground">Loading user data...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Desktop Sidebar */}
@@ -43,7 +56,7 @@ const Layout = () => {
         <aside className="w-64 border-r bg-sidebar-background text-sidebar-foreground flex flex-col">
           <div className="flex items-center justify-center h-20 border-b"> {/* Increased height */}
             <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-16 w-16 mr-2" /> {/* Increased to h-16 w-16 */}
-            <h1 className="text-2xl font-bold text-sidebar-primary">BistroBot</h1> {/* Increased font size */}
+            <h1 className="text-2xl font-bold text-sidebar-primary">{restaurantName}</h1> {/* Display dynamic restaurant name */}
           </div>
           <div className="flex-grow">
             <Sidebar onLinkClick={handleLinkClick} />
@@ -66,7 +79,7 @@ const Layout = () => {
               <SheetContent side="left" className="flex flex-col w-64 p-0">
                 <div className="flex items-center justify-center h-20 border-b"> {/* Increased height */}
                   <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="h-16 w-16 mr-2" /> {/* Increased to h-16 w-16 */}
-                  <h1 className="text-2xl font-bold text-primary">BistroBot</h1> {/* Increased font size */}
+                  <h1 className="text-2xl font-bold text-primary">{restaurantName}</h1> {/* Display dynamic restaurant name */}
                 </div>
                 <div className="flex-grow">
                   <Sidebar onLinkClick={handleLinkClick} />

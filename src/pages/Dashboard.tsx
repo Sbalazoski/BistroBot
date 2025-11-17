@@ -13,15 +13,6 @@ const Dashboard = () => {
       <SentimentTrendChart />
 
       <RecentReviewsList /> {/* Add the new RecentReviewsList component here */}
-
-      <div className="flex-grow p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg"> {/* Added rounded-lg and shadow-lg */}
-        <p className="text-lg text-gray-600 dark:text-gray-300">
-          Welcome to your BistroBot dashboard! This is where you'll see an overview of your review activity, sentiment trends, and reply statuses.
-        </p>
-        <p className="text-md text-gray-500 dark:text-gray-400 mt-2">
-          More features will be added here soon.
-        </p>
-      </div>
     </div>
   );
 };
