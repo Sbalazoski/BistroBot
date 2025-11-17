@@ -54,7 +54,7 @@ const Layout = () => {
 
       <div className="flex flex-col flex-1">
         {/* Header */}
-        <header className="flex items-center justify-between h-16 px-4 border-b bg-background shadow-sm">
+        <header className="flex items-center justify-between h-16 px-6 border-b bg-background shadow-sm"> {/* Changed px-4 to px-6 */}
           {isMobile && (
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>

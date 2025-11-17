@@ -44,7 +44,7 @@ const AuthPage = () => {
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md shadow-lg"> {/* Added shadow-lg here */}
       <CardHeader className="text-center">
         <p className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
           Overwhelmed by online reviews?
@@ -52,7 +52,7 @@ const AuthPage = () => {
         <p className="text-md text-gray-600 dark:text-gray-300 mb-4">
           BistroBot helps restaurants automate review replies, manage online reputation, and maintain authenticity.
         </p>
-        <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="mx-auto h-48 w-48 mb-4" />
+        <img src="/bistrologobistrobot.png" alt="BistroBot Logo" className="mx-auto h-32 w-32 mb-6" /> {/* Adjusted size and margin */}
         <CardTitle className="text-2xl">{isLogin ? "Login" : "Sign Up"}</CardTitle>
         <CardDescription>
           {isLogin ? "Enter your credentials to access your dashboard." : "Create an account to get started with BistroBot."}

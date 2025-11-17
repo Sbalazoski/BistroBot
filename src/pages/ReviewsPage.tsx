@@ -71,16 +71,16 @@ const ReviewsPage = () => {
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Review Management</h2>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-4 items-center flex-wrap"> {/* Added flex-wrap for better responsiveness */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-4 items-center flex-wrap">
         <Input
           placeholder="Search by customer or comment..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full sm:w-[300px]"
+          className="w-full sm:max-w-[300px]" // Added max-w for better control
         />
 
         <div className="flex items-center gap-2">
-          <label htmlFor="platform-filter" className="text-sm font-medium">Filter by Platform:</label>
+          <label htmlFor="platform-filter" className="text-sm font-medium whitespace-nowrap">Filter by Platform:</label> {/* Added whitespace-nowrap */}
           <Select value={platformFilter} onValueChange={setPlatformFilter}>
             <SelectTrigger id="platform-filter" className="w-[180px]">
               <SelectValue placeholder="Select platform" />
@@ -95,7 +95,7 @@ const ReviewsPage = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="sentiment-filter" className="text-sm font-medium">Filter by Sentiment:</label>
+          <label htmlFor="sentiment-filter" className="text-sm font-medium whitespace-nowrap">Filter by Sentiment:</label> {/* Added whitespace-nowrap */}
           <Select value={sentimentFilter} onValueChange={setSentimentFilter}>
             <SelectTrigger id="sentiment-filter" className="w-[180px]">
               <SelectValue placeholder="Select sentiment" />
@@ -110,7 +110,7 @@ const ReviewsPage = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="sort-order" className="text-sm font-medium">Sort by Date:</label>
+          <label htmlFor="sort-order" className="text-sm font-medium whitespace-nowrap">Sort by Date:</label> {/* Added whitespace-nowrap */}
           <Select value={sortOrder} onValueChange={setSortOrder}>
             <SelectTrigger id="sort-order" className="w-[180px]">
               <SelectValue placeholder="Sort order" />

@@ -291,7 +291,7 @@ const ReviewDetailsPage = () => {
         </CardHeader>
         <CardContent>
           {localReview.history.length > 0 ? (
-            <ol className="relative border-l border-gray-200 dark:border-gray-700 ml-4">
+            <ol className="relative border-l border-gray-200 dark:border-gray-700 ml-4 pl-4"> {/* Added pl-4 for more internal padding */}
               {localReview.history
                 .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
                 .map((entry, index) => (
