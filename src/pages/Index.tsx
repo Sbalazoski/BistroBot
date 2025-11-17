@@ -2,7 +2,7 @@
 
 import React from "react";
 import AuthPage from "./AuthPage";
-import MadeWithDyad from "@/components/made-with-dyad"; // Corrected import path
+import MadeWithDyad from "@/components/MadeWithDyad";
 import BistroBotPatternOverlay from "@/components/BistroBotPatternOverlay"; // Import the new component
 
 const Index = () => {
