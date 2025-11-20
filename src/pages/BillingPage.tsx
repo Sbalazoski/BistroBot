@@ -87,7 +87,7 @@ const BillingPage = () => {
             <CardDescription>Unlock advanced features for growing restaurants.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-2xl font-bold">$29<span className="text-sm font-normal text-muted-foreground">/month</span></p>
+            <p className="text-2xl font-bold">$99<span className="text-sm font-normal text-muted-foreground">/month</span></p>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500" /> Unlimited Reply Templates
