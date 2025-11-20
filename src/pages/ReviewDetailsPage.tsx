@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Sparkles, Loader2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { mockReviews } from "@/data/mockReviews";
+import { useAppSettings } from "@/hooks/use-app-settings"; // Import useAppSettings
 
 // Define a type for the review history entry
 interface ReviewHistoryEntry {
@@ -31,6 +32,7 @@ interface ReviewWithHistory {
 const ReviewDetailsPage = () => {
   const { reviewId } = useParams<{ reviewId: string }>();
   const navigate = useNavigate();
+  const { settings } = useAppSettings(); // Use the app settings hook
   
   // Find the initial review from mock data
   const initialReview = mockReviews.find((r) => r.id === reviewId) as ReviewWithHistory | undefined;
@@ -81,7 +83,7 @@ const ReviewDetailsPage = () => {
         generatedReply = `Dear ${localReview.customer}, thank you for your wonderful ${localReview.rating}-star review! We're thrilled to hear you enjoyed your experience. We look forward to serving you again soon!`;
         break;
       case "Negative":
-        generatedReply = `Dear ${localReview.customer}, we are truly sorry to hear about your recent experience. We take your feedback seriously and are committed to improving. Please contact us directly at [Your Contact Info] so we can make things right.`;
+        generatedReply = `Dear ${localReview.customer}, we are truly sorry to hear about your recent experience. We take your feedback seriously and are committed to improving. Please contact us directly at ${settings.restaurantContactInfo} so we can make things right.`;
         break;
       case "Neutral":
         generatedReply = `Hi ${localReview.customer}, thank you for your feedback. We appreciate you sharing your thoughts and are always looking for ways to enhance our service. We hope to see you again!`;
@@ -89,9 +91,25 @@ const ReviewDetailsPage = () => {
       default:
         generatedReply = `Thank you for your review, ${localReview.customer}! We appreciate your feedback.`;
     }
-    setReplyContent(generatedReply);
+
+    // Simulate applying "words to avoid" and "words to include"
+    let finalReply = generatedReply;
+    settings.wordsToAvoid.forEach(word => {
+      const regex = new RegExp(`\\b${word}\\b`, 'gi'); // Case-insensitive whole word match
+      finalReply = finalReply.replace(regex, '***'); // Replace with asterisks
+    });
+    
+    // Simple simulation: if a word to include isn't present, append it (not ideal for real AI)
+    settings.wordsToInclude.forEach(word => {
+      if (!finalReply.toLowerCase().includes(word.toLowerCase())) {
+        finalReply += ` We strive for ${word} experiences.`;
+      }
+    });
+
+
+    setReplyContent(finalReply);
     addHistoryEntry("AI drafted reply");
-    setLocalReview(prev => prev ? { ...prev, status: "Drafted", reply: generatedReply } : null);
+    setLocalReview(prev => prev ? { ...prev, status: "Drafted", reply: finalReply } : null);
     showSuccess("AI reply generated!");
     setIsGenerating(false);
   };

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
 import { useTheme } from "next-themes"; // Import useTheme
+import BrandGuidelinesForm from "@/components/BrandGuidelinesForm"; // Import BrandGuidelinesForm
 
 const SettingsPage = () => {
   const { theme, setTheme } = useTheme(); // Get theme and setTheme from useTheme
@@ -57,6 +58,8 @@ const SettingsPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        <BrandGuidelinesForm /> {/* Add the new BrandGuidelinesForm here */}
 
         <Card>
           <CardHeader>
