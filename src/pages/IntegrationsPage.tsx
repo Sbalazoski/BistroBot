@@ -3,11 +3,13 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Link as LinkIcon, Link2Off, Loader2 } from "lucide-react"; // Added Loader2 icon
+import { ExternalLink, Link as LinkIcon, Link2Off, Loader2, Info } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useSubscription } from "@/hooks/use-subscription"; // Import the subscription hook
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Import Alert components
 
 interface Integration {
   id: string;
@@ -42,11 +44,19 @@ const IntegrationsPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
   const [apiKey, setApiKey] = useState("");
-  const [isConnecting, setIsConnecting] = useState(false); // New state for loading during connection
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const { subscription, isFree } = useSubscription(); // Use the subscription hook
+  const connectedIntegrationsCount = integrations.filter(i => i.isConnected).length;
+  const canConnectMoreIntegrations = connectedIntegrationsCount < subscription.features.maxIntegrations;
 
   const handleConnectClick = (integration: Integration) => {
+    if (isFree && !canConnectMoreIntegrations && !integration.isConnected) {
+      showError(`You have reached the limit of ${subscription.features.maxIntegrations} integration for your ${subscription.planName}. Please upgrade to connect more.`);
+      return;
+    }
     setSelectedIntegration(integration);
-    setApiKey(""); // Clear previous API key
+    setApiKey("");
     setIsDialogOpen(true);
   };
 
@@ -58,13 +68,9 @@ const IntegrationsPage = () => {
       return;
     }
 
-    setIsConnecting(true); // Start loading
-    // Simulate API call delay for OAuth initiation/token exchange
+    setIsConnecting(true);
     await new Promise(resolve => setTimeout(resolve, 2000)); 
 
-    // In a real app, this would involve sending the API key to your backend
-    // and your backend initiating the OAuth flow or direct API connection.
-    // For now, we simulate success.
     setIntegrations(integrations.map(integration =>
       integration.id === selectedIntegration.id
         ? { ...integration, isConnected: true }
@@ -72,7 +78,7 @@ const IntegrationsPage = () => {
     ));
     showSuccess(`Successfully connected to ${selectedIntegration.name}!`);
     
-    setIsConnecting(false); // End loading
+    setIsConnecting(false);
     setIsDialogOpen(false);
     setSelectedIntegration(null);
     setApiKey("");
@@ -101,6 +107,16 @@ const IntegrationsPage = () => {
         Connect BistroBot to your favorite review platforms to automate replies and manage your online reputation.
       </p>
 
+      {isFree && !canConnectMoreIntegrations && (
+        <Alert variant="default">
+          <Info className="h-4 w-4" />
+          <AlertTitle>Integration Limit Reached!</AlertTitle>
+          <AlertDescription>
+            You are on the {subscription.planName} and can only have {subscription.features.maxIntegrations} integration connected. Upgrade to a Pro plan to connect more!
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {integrations.map((integration) => (
           <Card key={integration.id} className="flex flex-col">
@@ -120,7 +136,10 @@ const IntegrationsPage = () => {
                   </Button>
                 </div>
               ) : (
-                <Button onClick={() => handleConnectClick(integration)} disabled={isConnecting}>
+                <Button
+                  onClick={() => handleConnectClick(integration)}
+                  disabled={isConnecting || (isFree && !canConnectMoreIntegrations)}
+                >
                   {isConnecting && selectedIntegration?.id === integration.id ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
@@ -156,14 +175,13 @@ const IntegrationsPage = () => {
                 placeholder="e.g., sk-xxxxxxxxxxxxxxxxxxxx"
               />
             </div>
-            {/* Placeholder for OAuth Redirect URL */}
             <div className="grid grid-cols-4 items-center gap-4 text-sm text-muted-foreground">
               <Label htmlFor="oauth-redirect" className="text-right">
                 Redirect URL
               </Label>
               <Input
                 id="oauth-redirect"
-                value="https://your-backend.com/api/oauth/callback" // Example placeholder
+                value="https://your-backend.com/api/oauth/callback"
                 readOnly
                 className="col-span-3 bg-muted cursor-not-allowed"
               />
