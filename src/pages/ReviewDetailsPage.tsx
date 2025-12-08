@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -92,17 +94,24 @@ const ReviewDetailsPage = () => {
         generatedReply = `Thank you for your review, ${localReview.customer}! We appreciate your feedback.`;
     }
 
-    // Simulate applying "words to avoid" and "words to include"
+    // Simulate applying "words to avoid"
     let finalReply = generatedReply;
     settings.wordsToAvoid.forEach(word => {
       const regex = new RegExp(`\\b${word}\\b`, 'gi'); // Case-insensitive whole word match
       finalReply = finalReply.replace(regex, '***'); // Replace with asterisks
     });
     
-    // Simple simulation: if a word to include isn't present, append it (not ideal for real AI)
+    // Simulate applying "words to include" more naturally
     settings.wordsToInclude.forEach(word => {
       if (!finalReply.toLowerCase().includes(word.toLowerCase())) {
-        finalReply += ` We strive for ${word} experiences.`;
+        // Try to insert the word at a reasonable place, e.g., before the last sentence.
+        const sentences = finalReply.split(/(?<=[.!?])\s+/);
+        if (sentences.length > 1) {
+          const lastSentence = sentences.pop();
+          finalReply = sentences.join(' ') + `. We strive for ${word} experiences.` + (lastSentence ? ` ${lastSentence}` : '');
+        } else {
+          finalReply += ` We strive for ${word} experiences.`;
+        }
       }
     });
 
