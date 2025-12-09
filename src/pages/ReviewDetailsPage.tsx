@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Sparkles, Loader2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
-import { mockReviews } from "@/data/mockReviews";
+import { apiRequest } from "@/lib/api"; // Import apiRequest
 import { useAppSettings } from "@/hooks/use-app-settings"; // Import useAppSettings
 
 // Define a type for the review history entry
@@ -17,8 +17,8 @@ interface ReviewHistoryEntry {
   action: string;
 }
 
-// Extend the mock review type to include history
-interface ReviewWithHistory {
+// Define the structure of a review as expected from the backend
+interface Review {
   id: string;
   platform: string;
   customer: string;
@@ -26,7 +26,7 @@ interface ReviewWithHistory {
   comment: string;
   sentiment: "Positive" | "Negative" | "Neutral";
   status: "Pending Reply" | "Drafted" | "Replied";
-  date: string;
+  date: string; // Assuming date is a string like "YYYY-MM-DD"
   reply: string | null;
   history: ReviewHistoryEntry[];
 }
@@ -36,22 +36,122 @@ const ReviewDetailsPage = () => {
   const navigate = useNavigate();
   const { settings } = useAppSettings(); // Use the app settings hook
   
-  // Find the initial review from mock data
-  const initialReview = mockReviews.find((r) => r.id === reviewId) as ReviewWithHistory | undefined;
-
-  // Use local state to manage the review details, allowing updates
-  const [localReview, setLocalReview] = useState<ReviewWithHistory | null>(initialReview || null);
+  const [localReview, setLocalReview] = useState<Review | null>(null);
   const [replyContent, setReplyContent] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingReview, setIsLoadingReview] = useState(true);
+
+  const fetchReview = useCallback(async () => {
+    setIsLoadingReview(true);
+    try {
+      // Assuming /api/reviews/fetch returns an array of reviews
+      const reviews: Review[] = await apiRequest<Review[]>("/reviews/fetch", "GET");
+      const foundReview = reviews.find((r) => r.id === reviewId);
+      if (foundReview) {
+        setLocalReview(foundReview);
+        setReplyContent(foundReview.reply || "");
+      } else {
+        showError("Review not found.");
+        setLocalReview(null);
+      }
+    } catch (error) {
+      showError("Failed to load review details.");
+      console.error("Error fetching review:", error);
+      setLocalReview(null);
+    } finally {
+      setIsLoadingReview(false);
+    }
+  }, [reviewId]);
 
   useEffect(() => {
-    if (localReview?.reply) {
-      setReplyContent(localReview.reply);
-    } else {
-      setReplyContent("");
+    fetchReview();
+  }, [fetchReview]);
+
+  const addHistoryEntry = (action: string) => {
+    setLocalReview(prev => {
+      if (!prev) return null;
+      const newHistory = [...prev.history, { timestamp: new Date().toISOString(), action }];
+      return { ...prev, history: newHistory };
+    });
+  };
+
+  const handleGenerateReply = async () => {
+    if (!localReview) return;
+
+    setIsGenerating(true);
+    try {
+      const response = await apiRequest<{ reply: string }>("/reviews/ai-reply", "POST", {
+        reviewId: localReview.id,
+        comment: localReview.comment,
+        sentiment: localReview.sentiment,
+        restaurantContactInfo: settings.restaurantContactInfo,
+        wordsToAvoid: settings.wordsToAvoid,
+        wordsToInclude: settings.wordsToInclude,
+      });
+      setReplyContent(response.reply);
+      addHistoryEntry("AI drafted reply");
+      setLocalReview(prev => prev ? { ...prev, status: "Drafted", reply: response.reply } : null);
+      showSuccess("AI reply generated!");
+    } catch (error) {
+      showError("Failed to generate AI reply.");
+      console.error("Error generating reply:", error);
+    } finally {
+      setIsGenerating(false);
     }
-  }, [localReview]);
+  };
+
+  const handleSaveDraft = async () => {
+    if (!localReview) return;
+    setIsSaving(true);
+    try {
+      // Assuming the backend has an endpoint to save a draft,
+      // or that 'submit' can also handle saving drafts without publishing.
+      // For now, we'll simulate a save and update local state.
+      // In a real scenario, you might have a separate /reviews/save-draft endpoint.
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      addHistoryEntry("User saved draft");
+      setLocalReview(prev => prev ? { ...prev, status: "Drafted", reply: replyContent } : null);
+      showSuccess("Reply draft saved!");
+    } catch (error) {
+      showError("Failed to save draft.");
+      console.error("Error saving draft:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePublishReply = async () => {
+    if (!localReview) return;
+    if (!replyContent.trim()) {
+      showError("Reply cannot be empty to publish.");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await apiRequest("/reviews/submit", "POST", {
+        reviewId: localReview.id,
+        replyContent: replyContent,
+      });
+      addHistoryEntry("User published reply");
+      setLocalReview(prev => prev ? { ...prev, status: "Replied", reply: replyContent } : null);
+      showSuccess("Reply published successfully!");
+    } catch (error) {
+      showError("Failed to publish reply.");
+      console.error("Error publishing reply:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoadingReview) {
+    return (
+      <div className="flex flex-col min-h-[calc(100vh-128px)] items-center justify-center space-y-6">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="text-lg text-gray-600 dark:text-gray-300">Loading review details...</p>
+      </div>
+    );
+  }
 
   if (!localReview) {
     return (
@@ -66,88 +166,6 @@ const ReviewDetailsPage = () => {
       </div>
     );
   }
-
-  const addHistoryEntry = (action: string) => {
-    setLocalReview(prev => {
-      if (!prev) return null;
-      const newHistory = [...prev.history, { timestamp: new Date().toISOString(), action }];
-      return { ...prev, history: newHistory };
-    });
-  };
-
-  const handleGenerateReply = async () => {
-    setIsGenerating(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    let generatedReply = "";
-    switch (localReview.sentiment) {
-      case "Positive":
-        generatedReply = `Dear ${localReview.customer}, thank you for your wonderful ${localReview.rating}-star review! We're thrilled to hear you enjoyed your experience. We look forward to serving you again soon!`;
-        break;
-      case "Negative":
-        generatedReply = `Dear ${localReview.customer}, we are truly sorry to hear about your recent experience. We take your feedback seriously and are committed to improving. Please contact us directly at ${settings.restaurantContactInfo} so we can make things right.`;
-        break;
-      case "Neutral":
-        generatedReply = `Hi ${localReview.customer}, thank you for your feedback. We appreciate you sharing your thoughts and are always looking for ways to enhance our service. We hope to see you again!`;
-        break;
-      default:
-        generatedReply = `Thank you for your review, ${localReview.customer}! We appreciate your feedback.`;
-    }
-
-    // Simulate applying "words to avoid"
-    let finalReply = generatedReply;
-    settings.wordsToAvoid.forEach(word => {
-      const regex = new RegExp(`\\b${word}\\b`, 'gi'); // Case-insensitive whole word match
-      finalReply = finalReply.replace(regex, '***'); // Replace with asterisks
-    });
-    
-    // Simulate applying "words to include" more naturally
-    settings.wordsToInclude.forEach(word => {
-      if (!finalReply.toLowerCase().includes(word.toLowerCase())) {
-        // Try to insert the word at a reasonable place, e.g., before the last sentence.
-        const sentences = finalReply.split(/(?<=[.!?])\s+/);
-        if (sentences.length > 1) {
-          const lastSentence = sentences.pop();
-          finalReply = sentences.join(' ') + `. We strive for ${word} experiences.` + (lastSentence ? ` ${lastSentence}` : '');
-        } else {
-          finalReply += ` We strive for ${word} experiences.`;
-        }
-      }
-    });
-
-
-    setReplyContent(finalReply);
-    addHistoryEntry("AI drafted reply");
-    setLocalReview(prev => prev ? { ...prev, status: "Drafted", reply: finalReply } : null);
-    showSuccess("AI reply generated!");
-    setIsGenerating(false);
-  };
-
-  const handleSaveDraft = async () => {
-    setIsSaving(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    addHistoryEntry("User saved draft");
-    setLocalReview(prev => prev ? { ...prev, status: "Drafted", reply: replyContent } : null);
-    showSuccess("Reply draft saved!");
-    console.log("Saving draft:", replyContent);
-    setIsSaving(false);
-  };
-
-  const handlePublishReply = async () => {
-    if (!replyContent.trim()) {
-      showError("Reply cannot be empty to publish.");
-      return;
-    }
-    setIsSaving(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    addHistoryEntry("User published reply");
-    setLocalReview(prev => prev ? { ...prev, status: "Replied", reply: replyContent } : null);
-    showSuccess("Reply published successfully!");
-    console.log("Publishing reply:", replyContent);
-    setIsSaving(false);
-  };
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
