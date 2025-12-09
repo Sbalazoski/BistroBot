@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { PlusCircle, Edit, Trash2, Info } from "lucide-react"; // Import Info icon
+import { PlusCircle, Edit, Trash2, Info, Loader2 } from "lucide-react"; // Import Info and Loader2 icon
 import { showSuccess, showError } from "@/utils/toast";
 import {
   Select,
@@ -19,37 +19,20 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useSubscription } from "@/hooks/use-subscription"; // Import the subscription hook
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Import Alert components
-
-interface ReplyTemplate {
-  id: string;
-  name: string;
-  content: string;
-  sentiment: "Positive" | "Negative" | "Neutral" | "All";
-}
-
-const initialTemplates: ReplyTemplate[] = [
-  {
-    id: "1",
-    name: "Positive Review Thank You",
-    content: "Thank you for your wonderful feedback! We're thrilled you enjoyed your experience and look forward to welcoming you back soon.",
-    sentiment: "Positive",
-  },
-  {
-    id: "2",
-    name: "Negative Review Apology",
-    content: "Dear customer, we are truly sorry to hear about your experience. We take your feedback seriously and are committed to improving. Please contact us directly so we can make things right.",
-    sentiment: "Negative",
-  },
-  {
-    id: "3",
-    name: "Neutral Review Acknowledgment",
-    content: "Hi there, thank you for your feedback. We appreciate you sharing your thoughts and are always looking for ways to enhance our service. We hope to see you again!",
-    sentiment: "Neutral",
-  },
-];
+import { useReplyTemplates, ReplyTemplate } from "@/hooks/use-reply-templates"; // Import useReplyTemplates hook and ReplyTemplate type
 
 const ReplyTemplatesPage = () => {
-  const [templates, setTemplates] = useState<ReplyTemplate[]>(initialTemplates);
+  const {
+    templates,
+    isLoading,
+    isError,
+    addTemplate,
+    updateTemplate,
+    deleteTemplate,
+    isAdding,
+    isUpdating,
+    isDeleting,
+  } = useReplyTemplates();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState<ReplyTemplate | null>(null);
   const [templateName, setTemplateName] = useState("");
@@ -59,6 +42,12 @@ const ReplyTemplatesPage = () => {
   const { subscription, isFree } = useSubscription(); // Use the subscription hook
   const canAddMoreTemplates = templates.length < subscription.features.maxTemplates;
 
+  useEffect(() => {
+    if (!isDialogOpen) {
+      resetForm();
+    }
+  }, [isDialogOpen]);
+
   const resetForm = () => {
     setCurrentTemplate(null);
     setTemplateName("");
@@ -66,44 +55,38 @@ const ReplyTemplatesPage = () => {
     setTemplateSentiment("All");
   };
 
-  const handleAddEditTemplate = () => {
+  const handleAddEditTemplate = async () => {
     if (!templateName.trim() || !templateContent.trim()) {
       showError("Template name and content cannot be empty.");
       return;
     }
 
-    if (currentTemplate) {
-      // Edit existing template
-      setTemplates(templates.map(t =>
-        t.id === currentTemplate.id
-          ? { ...t, name: templateName, content: templateContent, sentiment: templateSentiment }
-          : t
-      ));
-      showSuccess("Template updated successfully!");
-    } else {
-      // Add new template
-      if (!canAddMoreTemplates) {
-        showError(`You have reached the limit of ${subscription.features.maxTemplates} templates for your ${subscription.planName}. Please upgrade to add more.`);
-        setIsDialogOpen(false);
-        return;
+    try {
+      if (currentTemplate) {
+        // Edit existing template
+        await updateTemplate({ ...currentTemplate, name: templateName, content: templateContent, sentiment: templateSentiment });
+      } else {
+        // Add new template
+        if (!canAddMoreTemplates) {
+          showError(`You have reached the limit of ${subscription.features.maxTemplates} templates for your ${subscription.planName}. Please upgrade to add more.`);
+          setIsDialogOpen(false);
+          return;
+        }
+        await addTemplate({ name: templateName, content: templateContent, sentiment: templateSentiment });
       }
-      const newTemplate: ReplyTemplate = {
-        id: String(Date.now()), // Simple unique ID
-        name: templateName,
-        content: templateContent,
-        sentiment: templateSentiment,
-      };
-      setTemplates([...templates, newTemplate]);
-      showSuccess("Template added successfully!");
+      setIsDialogOpen(false);
+    } catch (error) {
+      // Error handled by useReplyTemplates hook
     }
-    setIsDialogOpen(false);
-    resetForm();
   };
 
-  const handleDeleteTemplate = (id: string) => {
+  const handleDeleteTemplate = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this template?")) {
-      setTemplates(templates.filter(t => t.id !== id));
-      showSuccess("Template deleted successfully!");
+      try {
+        await deleteTemplate(id);
+      } catch (error) {
+        // Error handled by useReplyTemplates hook
+      }
     }
   };
 
@@ -137,6 +120,24 @@ const ReplyTemplatesPage = () => {
         return "outline";
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-[calc(100vh-128px)] items-center justify-center space-y-6">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="text-lg text-gray-600 dark:text-gray-300">Loading templates...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col min-h-[calc(100vh-128px)] items-center justify-center space-y-6 text-destructive">
+        <h2 className="text-3xl font-bold">Error</h2>
+        <p className="text-lg">Failed to load templates. Please try again later.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
@@ -196,8 +197,15 @@ const ReplyTemplatesPage = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" onClick={handleAddEditTemplate}>
-                {currentTemplate ? "Save Changes" : "Add Template"}
+              <Button type="submit" onClick={handleAddEditTemplate} disabled={isAdding || isUpdating}>
+                {(isAdding || isUpdating) ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  currentTemplate ? "Save Changes" : "Add Template"
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -226,11 +234,15 @@ const ReplyTemplatesPage = () => {
                 <CardTitle className="flex justify-between items-center">
                   {template.name}
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="icon" onClick={() => openEditDialog(template)}>
+                    <Button variant="outline" size="icon" onClick={() => openEditDialog(template)} disabled={isDeleting}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="destructive" size="icon" onClick={() => handleDeleteTemplate(template.id)}>
-                      <Trash2 className="h-4 w-4" />
+                    <Button variant="destructive" size="icon" onClick={() => handleDeleteTemplate(template.id)} disabled={isDeleting}>
+                      {isDeleting ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </CardTitle>
