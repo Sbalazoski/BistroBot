@@ -1,0 +1,2 @@
+npm install stripe
+npm install -D @types/stripe
