@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { showSuccess, showError } from "@/utils/toast";
+import { apiRequest } from "@/lib/api"; // Import the new apiRequest utility
 
 const AuthPage = () => {
   const [email, setEmail] = useState("");
@@ -21,20 +22,19 @@ const AuthPage = () => {
     try {
       let authResponse;
       if (isLogin) {
-        authResponse = await supabase.auth.signInWithPassword({ email, password });
+        authResponse = await apiRequest<{ token: string }>("/auth/login", "POST", { email, password }, { isAuthRequest: true });
+        // After successful login with backend, sign in to Supabase with the received token
+        const { error: supabaseError } = await supabase.auth.signInWithIdToken({
+          provider: 'email',
+          token: authResponse.token,
+        });
+        if (supabaseError) throw supabaseError;
+        showSuccess("Logged in successfully!");
+        navigate("/dashboard");
       } else {
-        authResponse = await supabase.auth.signUp({ email, password });
-      }
-
-      const { error, data } = authResponse;
-
-      if (error) {
-        showError(error.message);
-      } else if (data.user) {
-        showSuccess(isLogin ? "Logged in successfully!" : "Signed up successfully! Please check your email to confirm.");
-        if (isLogin) {
-          navigate("/dashboard");
-        }
+        authResponse = await apiRequest<{ message: string }>("/auth/signup", "POST", { email, password }, { isAuthRequest: true });
+        showSuccess("Signed up successfully! Please check your email to confirm.");
+        // No redirect to dashboard on signup, as email confirmation is needed
       }
     } catch (error: any) {
       showError(error.message || "An unexpected error occurred.");
