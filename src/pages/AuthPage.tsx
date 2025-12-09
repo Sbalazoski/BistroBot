@@ -11,7 +11,6 @@ import { apiRequest } from "@/lib/api"; // Import the new apiRequest utility
 const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [restaurantName, setRestaurantName] = useState(""); // New state for restaurant name
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,8 +32,7 @@ const AuthPage = () => {
         showSuccess("Logged in successfully!");
         navigate("/dashboard");
       } else {
-        // Include restaurantName in the signup request
-        authResponse = await apiRequest<{ message: string }>("/auth/signup", "POST", { email, password, restaurantName }, { isAuthRequest: true });
+        authResponse = await apiRequest<{ message: string }>("/auth/signup", "POST", { email, password }, { isAuthRequest: true });
         showSuccess("Signed up successfully! Please check your email to confirm.");
         // No redirect to dashboard on signup, as email confirmation is needed
       }
@@ -83,19 +81,6 @@ const AuthPage = () => {
               required
             />
           </div>
-          {!isLogin && ( // Only show restaurant name input for signup
-            <div className="space-y-2">
-              <Label htmlFor="restaurant-name">Restaurant Name</Label>
-              <Input
-                id="restaurant-name"
-                type="text"
-                placeholder="BistroBot Cafe"
-                value={restaurantName}
-                onChange={(e) => setRestaurantName(e.target.value)}
-                required
-              />
-            </div>
-          )}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Loading..." : (isLogin ? "Login" : "Sign Up")}
           </Button>
