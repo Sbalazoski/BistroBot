@@ -10,18 +10,29 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-
-const data = [
-  { name: "Jan", Positive: 4000, Negative: 2400, Neutral: 1000 },
-  { name: "Feb", Positive: 3000, Negative: 1398, Neutral: 2210 },
-  { name: "Mar", Positive: 2000, Negative: 9800, Neutral: 2290 },
-  { name: "Apr", Positive: 2780, Negative: 3908, Neutral: 2000 },
-  { name: "May", Positive: 1890, Negative: 4800, Neutral: 2181 },
-  { name: "Jun", Positive: 2390, Negative: 3800, Neutral: 2500 },
-  { name: "Jul", Positive: 3490, Negative: 4300, Neutral: 2100 },
-];
+import { useAnalytics } from "@/hooks/use-analytics"; // Import useAnalytics hook
+import { Loader2 } from "lucide-react"; // Import Loader2 icon
 
 const SentimentTrendChart = () => {
+  const { data: analytics, isLoading, isError } = useAnalytics();
+
+  if (isLoading) {
+    return (
+      <Card className="col-span-full flex items-center justify-center h-[300px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-muted-foreground">Loading sentiment trends...</p>
+      </Card>
+    );
+  }
+
+  if (isError || !analytics) {
+    return (
+      <Card className="col-span-full p-6 text-center text-destructive">
+        Failed to load sentiment trends. Please ensure your backend is running and accessible.
+      </Card>
+    );
+  }
+
   return (
     <Card className="col-span-full">
       <CardHeader>
@@ -34,7 +45,7 @@ const SentimentTrendChart = () => {
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
-              data={data}
+              data={analytics.sentimentTrends}
               margin={{
                 top: 5,
                 right: 10,

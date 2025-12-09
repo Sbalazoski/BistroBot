@@ -1,39 +1,45 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, MessageSquareText, TrendingUp, Clock, ThumbsDown } from "lucide-react"; // Import Clock and ThumbsDown icons
-import { mockReviews } from "@/data/mockReviews"; // Import mockReviews to calculate new metrics
+import { Star, MessageSquareText, TrendingUp, Clock, ThumbsDown } from "lucide-react";
+import { useAnalytics } from "@/hooks/use-analytics"; // Import useAnalytics hook
+import { Loader2 } from "lucide-react"; // Import Loader2 icon
 
 const ReviewSummaryCard = () => {
-  // Mock data for demonstration
-  const totalReviews = mockReviews.length;
-  const averageRating = (mockReviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1);
-  const newReviewsToday = mockReviews.filter(review => {
-    const reviewDate = new Date(review.date);
-    const today = new Date();
-    return reviewDate.toDateString() === today.toDateString();
-  }).length;
+  const { data: analytics, isLoading, isError } = useAnalytics();
 
-  // Calculate Pending Replies
-  const pendingReplies = mockReviews.filter(review => review.status === "Pending Reply").length;
+  if (isLoading) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Card key={i} className="flex items-center justify-center h-[120px]">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
-  // Calculate Negative Reviews This Week (mock logic for demonstration)
-  const negativeReviewsThisWeek = mockReviews.filter(review => {
-    const reviewDate = new Date(review.date);
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    return review.sentiment === "Negative" && reviewDate >= oneWeekAgo;
-  }).length;
-
+  if (isError || !analytics) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Card key={i} className="p-4 text-center text-destructive">
+            Failed to load data.
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"> {/* Adjusted grid for more cards */}
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Reviews</CardTitle>
           <MessageSquareText className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{totalReviews}</div>
+          <div className="text-2xl font-bold">{analytics.totalReviews}</div>
           <p className="text-xs text-muted-foreground">
             +20% from last month (mock)
           </p>
@@ -45,9 +51,9 @@ const ReviewSummaryCard = () => {
           <Star className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{averageRating} / 5</div>
+          <div className="text-2xl font-bold">{analytics.averageRating.toFixed(1)} / 5</div>
           <p className="text-xs text-muted-foreground">
-            Based on {totalReviews} reviews
+            Based on {analytics.totalReviews} reviews
           </p>
         </CardContent>
       </Card>
@@ -57,7 +63,7 @@ const ReviewSummaryCard = () => {
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">+{newReviewsToday}</div>
+          <div className="text-2xl font-bold">+{analytics.newReviewsToday}</div>
           <p className="text-xs text-muted-foreground">
             Since yesterday
           </p>
@@ -69,7 +75,7 @@ const ReviewSummaryCard = () => {
           <Clock className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{pendingReplies}</div>
+          <div className="text-2xl font-bold">{analytics.pendingReplies}</div>
           <p className="text-xs text-muted-foreground">
             Reviews awaiting your attention
           </p>
@@ -81,7 +87,7 @@ const ReviewSummaryCard = () => {
           <ThumbsDown className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{negativeReviewsThisWeek}</div>
+          <div className="text-2xl font-bold">{analytics.negativeReviewsThisWeek}</div>
           <p className="text-xs text-muted-foreground">
             In the last 7 days
           </p>
