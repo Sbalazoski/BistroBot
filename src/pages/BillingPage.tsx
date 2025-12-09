@@ -1,24 +1,33 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react"; // Import useState
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Crown, ArrowUpCircle } from "lucide-react";
+import { CheckCircle, Crown, ArrowUpCircle, Loader2 } from "lucide-react"; // Import Loader2
 import { useSubscription } from "@/hooks/use-subscription";
-import { showSuccess } from "@/utils/toast";
+import { showSuccess, showError } from "@/utils/toast"; // Import showError
 
 const BillingPage = () => {
   const { subscription, upgradeToPro, downgradeToFree, isFree, isPro } = useSubscription();
+  const [isUpgrading, setIsUpgrading] = useState(false); // New loading state
 
-  const handleUpgrade = () => {
-    upgradeToPro();
-    showSuccess("You've been upgraded to the Pro Plan! (Mock)");
+  const handleUpgrade = async () => {
+    setIsUpgrading(true);
+    try {
+      await upgradeToPro();
+      // The upgradeToPro hook handles redirection, so no success toast here
+      // If it returns, it means there was an error or no redirection happened
+    } catch (error) {
+      showError("Failed to initiate upgrade.");
+    } finally {
+      setIsUpgrading(false);
+    }
   };
 
   const handleDowngrade = () => {
     downgradeToFree();
-    showSuccess("You've been downgraded to the Free Tier! (Mock)");
+    // showSuccess is already called inside downgradeToFree
   };
 
   return (
@@ -64,8 +73,16 @@ const BillingPage = () => {
             </ul>
             <div className="flex gap-2">
               {isFree && (
-                <Button onClick={handleUpgrade} className="w-full">
-                  <ArrowUpCircle className="mr-2 h-4 w-4" /> Upgrade to Pro
+                <Button onClick={handleUpgrade} className="w-full" disabled={isUpgrading}>
+                  {isUpgrading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Upgrading...
+                    </>
+                  ) : (
+                    <>
+                      <ArrowUpCircle className="mr-2 h-4 w-4" /> Upgrade to Pro
+                    </>
+                  )}
                 </Button>
               )}
               {isPro && (
@@ -102,8 +119,16 @@ const BillingPage = () => {
                 <CheckCircle className="h-4 w-4 text-green-500" /> Priority Support
               </li>
             </ul>
-            <Button className="w-full" disabled={isPro} onClick={handleUpgrade}>
-              {isPro ? "Current Plan" : "Choose Pro"}
+            <Button className="w-full" disabled={isPro || isUpgrading} onClick={handleUpgrade}>
+              {isUpgrading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Upgrading...
+                </>
+              ) : isPro ? (
+                "Current Plan"
+              ) : (
+                "Choose Pro"
+              )}
             </Button>
           </CardContent>
         </Card>
