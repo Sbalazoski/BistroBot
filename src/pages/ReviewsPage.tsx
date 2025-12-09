@@ -19,16 +19,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { mockReviews } from "@/data/mockReviews";
+import { useReviews } from "@/hooks/use-reviews"; // Import useReviews hook
+import { Loader2 } from "lucide-react"; // Import Loader2 icon
 
 const ReviewsPage = () => {
+  const { data: allReviews, isLoading, isError } = useReviews();
   const [sentimentFilter, setSentimentFilter] = useState<string>("All");
-  const [platformFilter, setPlatformFilter] = useState<string>("All"); // New state for platform filter
+  const [platformFilter, setPlatformFilter] = useState<string>("All");
   const [sortOrder, setSortOrder] = useState<string>("Newest");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const filteredAndSortedReviews = useMemo(() => {
-    let reviews = [...mockReviews];
+    if (!allReviews) return [];
+
+    let reviews = [...allReviews];
 
     // Filter by search query
     if (searchQuery) {
@@ -46,7 +50,7 @@ const ReviewsPage = () => {
     }
 
     // Filter by platform
-    if (platformFilter !== "All") { // Apply platform filter
+    if (platformFilter !== "All") {
       reviews = reviews.filter((review) => review.platform === platformFilter);
     }
 
@@ -58,20 +62,38 @@ const ReviewsPage = () => {
     });
 
     return reviews;
-  }, [sentimentFilter, platformFilter, sortOrder, searchQuery]); // Add platformFilter to dependencies
+  }, [allReviews, sentimentFilter, platformFilter, sortOrder, searchQuery]);
 
-  // Get unique platforms from mock reviews for the filter dropdown
+  // Get unique platforms from fetched reviews for the filter dropdown
   const uniquePlatforms = useMemo(() => {
     const platforms = new Set<string>();
-    mockReviews.forEach(review => platforms.add(review.platform));
+    allReviews?.forEach(review => platforms.add(review.platform));
     return Array.from(platforms);
-  }, []);
+  }, [allReviews]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-[calc(100vh-128px)] items-center justify-center space-y-6">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="text-lg text-gray-600 dark:text-gray-300">Loading reviews...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col min-h-[calc(100vh-128px)] items-center justify-center space-y-6 text-destructive">
+        <h2 className="text-3xl font-bold">Error</h2>
+        <p className="text-lg">Failed to load reviews. Please try again later.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-128px)] space-y-6">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Review Management</h2>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-4 items-center flex-wrap"> {/* Added flex-wrap for better responsiveness */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-4 items-center flex-wrap">
         <Input
           placeholder="Search by customer or comment..."
           value={searchQuery}

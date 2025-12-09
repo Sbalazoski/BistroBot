@@ -3,11 +3,31 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { mockReviews } from "@/data/mockReviews"; // Import mockReviews
+import { useReviews } from "@/hooks/use-reviews"; // Import useReviews hook
+import { Loader2 } from "lucide-react"; // Import Loader2 icon
 
 const RecentReviewsList = () => {
+  const { data: reviews, isLoading, isError } = useReviews();
+
   // Displaying only the top 5 most recent reviews for the dashboard
-  const recentReviews = mockReviews.slice(0, 5);
+  const recentReviews = reviews ? reviews.slice(0, 5) : [];
+
+  if (isLoading) {
+    return (
+      <Card className="col-span-full flex items-center justify-center h-[300px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-muted-foreground">Loading recent reviews...</p>
+      </Card>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card className="col-span-full p-6 text-center text-destructive">
+        Failed to load recent reviews. Please try again later.
+      </Card>
+    );
+  }
 
   return (
     <Card className="col-span-full">
