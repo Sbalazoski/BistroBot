@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { showSuccess, showError } from "@/utils/toast";
-import { apiRequest } from "@/lib/api"; // Import the new apiRequest utility
 
 const AuthPage = () => {
   const [email, setEmail] = useState("");
@@ -18,23 +17,28 @@ const AuthPage = () => {
   const handleAuth = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
-
+    
     try {
-      let authResponse;
+      let { error } = isLogin 
+        ? await supabase.auth.signInWithPassword({ email, password })
+        : await supabase.auth.signUp({ 
+            email, 
+            password,
+            options: {
+              data: {
+                first_name: '',
+                last_name: '',
+              }
+            }
+          });
+      
+      if (error) throw error;
+      
       if (isLogin) {
-        authResponse = await apiRequest<{ token: string }>("/auth/login", "POST", { email, password }, { isAuthRequest: true });
-        // After successful login with backend, sign in to Supabase with the received token
-        const { error: supabaseError } = await supabase.auth.signInWithIdToken({
-          provider: 'email',
-          token: authResponse.token,
-        });
-        if (supabaseError) throw supabaseError;
         showSuccess("Logged in successfully!");
         navigate("/dashboard");
       } else {
-        authResponse = await apiRequest<{ message: string }>("/auth/signup", "POST", { email, password }, { isAuthRequest: true });
         showSuccess("Signed up successfully! Please check your email to confirm.");
-        // No redirect to dashboard on signup, as email confirmation is needed
       }
     } catch (error: any) {
       showError(error.message || "An unexpected error occurred.");
@@ -62,23 +66,23 @@ const AuthPage = () => {
         <form onSubmit={handleAuth} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+            <Input 
+              id="email" 
+              type="email" 
+              placeholder="m@example.com" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+            <Input 
+              id="password" 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
             />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>

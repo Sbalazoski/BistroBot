@@ -12,7 +12,7 @@ import SettingsPage from "./pages/SettingsPage";
 import ReviewDetailsPage from "./pages/ReviewDetailsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import ReplyTemplatesPage from "./pages/ReplyTemplatesPage";
-import BillingPage from "./pages/BillingPage"; // Import BillingPage
+import BillingPage from "./pages/BillingPage";
 import { supabase } from "@/lib/supabase";
 import { ThemeProvider } from "next-themes";
 
@@ -29,9 +29,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
       setLoading(false);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription }, } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoading(false);
     });
@@ -40,10 +38,10 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   }, []);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Or a spinner
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
-  return session ? children : <Navigate to="/" />; // Redirect to the root path (Index page with Auth)
+  return session ? children : <Navigate to="/" />;
 };
 
 const App = () => (
@@ -55,14 +53,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             {/* Protected routes using the Layout component */}
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Layout />
-                </PrivateRoute>
-              }
-            >
+            <Route path="/dashboard" element={
+              <PrivateRoute>
+                <Layout />
+              </PrivateRoute>
+            }>
               <Route index element={<Dashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="reviews" element={<ReviewsPage />} />
@@ -70,7 +65,8 @@ const App = () => (
               <Route path="settings" element={<SettingsPage />} />
               <Route path="integrations" element={<IntegrationsPage />} />
               <Route path="templates" element={<ReplyTemplatesPage />} />
-              <Route path="billing" element={<BillingPage />} /> {/* New Billing Route */}
+              <Route path="billing" element={<BillingPage />} />
+              {/* New Billing Route */}
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
